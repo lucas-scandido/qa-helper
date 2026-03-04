@@ -1,0 +1,22 @@
+.page {
+  max-width: 860px;
+}
+
+.header {
+  margin-bottom: 40px;
+}
+
+.title {
+  font-family: 'Poppins', sans-serif;
+  font-size: 28px;
+  font-weight: 700;
+  color: var(--text-primary);
+  letter-spacing: -0.02em;
+  margin-bottom: 8px;
+}
+
+.subtitle {
+  font-size: 14px;
+  color: var(--text-secondary);
+  line-height: 1.6;
+}

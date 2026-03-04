@@ -1,0 +1,37 @@
+{
+    "nome": "ASMOB",
+    "tipo": "Aplicação Web (BackOffice) e Mobile (App ASMOB)",
+    "ambiente": [
+        "Web",
+        "Android",
+        "iOS"
+    ],
+    "usuarios": [
+        "Promotores",
+        "Lideranças"
+    ],
+    "fluxos": {
+        "Web - BackOffice (exclusivo para liderança)": [
+            "Gestão de Usuários",
+            "Gestão de Funcionalidades",
+            "Gestão de Permissões de Acesso"
+        ],
+        "Mobile - App ASMOB": [
+            "Fique por dentro (Pílula do Conhecimento)",
+            "Visitas",
+            "Missões",
+            "Meus Indicadores"
+        ]
+    },
+    "modulos": {
+        "Gestão de Usuários": "Cadastro e manutenção de usuários com perfil Ouro",
+        "Gestão de Funcionalidades": "Configuração e ativação de funcionalidades do App ASMOB",
+        "Gestão de Permissões de Acesso": "Definição de perfis e permissões de acesso às funcionalidades do ASMOB",
+        "Tela de Visitas": "Abas de Tarefas, Detalhes de Loja e Indicadores Flexíveis",
+        "Missões": "Abas de Missões e Redes",
+        "Meus Indicadores": "Minhas Tarefas do Mês, Minhas Tarefas do Dia e Minhas Missões do Mês"
+    },
+    "areaPaths": [
+        "asmob"
+    ]
+}

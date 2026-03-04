@@ -1,0 +1,19 @@
+.root {
+  display: flex;
+  min-height: 100vh;
+  background: var(--bg-base);
+}
+
+.main {
+  margin-left: var(--sidebar-width);
+  flex: 1;
+  padding: 52px 60px;
+  min-height: 100vh;
+  position: relative;
+}
+
+@media (max-width: 768px) {
+  .main {
+    padding: 32px 24px;
+  }
+}

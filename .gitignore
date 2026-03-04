@@ -1,0 +1,17 @@
+# Dependencies
+node_modules/
+backend/node_modules/
+
+# Environment
+backend/.env
+.env
+
+# Build
+dist/
+backend/dist/
+
+# Misc
+.DS_Store
+*.local
+
+estrutura.txt

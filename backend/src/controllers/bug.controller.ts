@@ -1,0 +1,82 @@
+import type { FastifyReply } from 'fastify'
+import { getWorkItem, createBug } from '../services/azure.service'
+import { generateBugWithAI, formatGeneratedBug } from '../services/ai.service'
+import { buildSystemPrompt, buildUserPrompt } from '../prompts/bug.prompt'
+import { identifyProductByAreaPath, buildProductContext } from '../products'
+import type { GenerateBugInput, CreateBugInput } from '../schemas/bug.schema'
+
+// ─── GET /api/bugs/search/:id ─────────────────────────────────────────────────
+
+export async function searchItem(id: number, reply: FastifyReply) {
+  const item = await getWorkItem(id)
+  return reply.send({ success: true, data: item })
+}
+
+// ─── POST /api/bugs/generate ──────────────────────────────────────────────────
+
+export async function generateBug(input: GenerateBugInput, reply: FastifyReply) {
+  const { description, workItemId } = input
+
+  const workItem = await getWorkItem(workItemId)
+
+  const product = identifyProductByAreaPath(workItem.areaPath)
+
+  if (!product) {
+    return reply.status(400).send({
+      success: false,
+      error: `Produto não identificado para o Area Path: "${workItem.areaPath}"`,
+    })
+  }
+
+  const productContext = buildProductContext(product)
+
+  console.log(`🧭 Produto identificado: ${product.nome}`)
+  console.log(`📍 Area Path: ${workItem.areaPath}`)
+
+  const systemPrompt = buildSystemPrompt()
+  const userPrompt = buildUserPrompt({
+    workItemId: workItem.id,
+    workItemType: workItem.type,
+    workItemTitle: workItem.title,
+    workItemState: workItem.state,
+    description,
+    product,
+    productContext,
+  })
+
+  const generated = await generateBugWithAI(systemPrompt, userPrompt)
+  const formatted = formatGeneratedBug(generated)
+
+  return reply.send({
+    success: true,
+    product: product.nome,
+    data: formatted,
+  })
+}
+
+// ─── POST /api/bugs/create ────────────────────────────────────────────────────
+
+export async function createBugHandler(input: CreateBugInput, reply: FastifyReply) {
+  const { workItemId, title, description, expectedResult, severity, stepIdentification } = input
+
+  const workItemSummary = await getWorkItem(workItemId)
+
+  const parentItem = {
+    id: workItemSummary.id,
+    url: `https://dev.azure.com/${process.env.AZURE_ORGANIZATION}/${process.env.AZURE_PROJECT}/_apis/wit/workitems/${workItemSummary.id}`,
+    fields: {
+      'System.Title': workItemSummary.title,
+      'System.WorkItemType': workItemSummary.type,
+      'System.State': workItemSummary.state,
+      'System.AreaPath': workItemSummary.areaPath,
+      'System.IterationPath': workItemSummary.iterationPath,
+    },
+  }
+
+  const created = await createBug(
+    { title, description, expectedResult, severity, stepIdentification, parentItem },
+    parentItem
+  )
+
+  return reply.status(201).send({ success: true, data: created })
+}
