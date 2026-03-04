@@ -18,7 +18,7 @@ interface BugStep2Props {
   onCancel: () => void
 }
 
-export function BugStep2({ active, completed, locked, description: initialDesc, workItem, onSubmit, onCancel }: BugStep2Props) {
+export function BugStep2({ active, completed, description: initialDesc, workItem, onSubmit, onCancel }: BugStep2Props) {
   const [value, setValue] = useState(initialDesc)
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
@@ -63,7 +63,7 @@ export function BugStep2({ active, completed, locked, description: initialDesc, 
         <h2 className={styles.stepTitle}>Descrição do Bug</h2>
       </div>
 
-      <div className={`${styles.stepContent} ${locked || (!active && !completed) ? styles.stepContentLocked : ''}`}>
+      <div className={`${styles.stepContent} ${!active && !completed ? styles.stepContentLocked : ''} ${completed ? styles.stepContentLocked : ''}`}>
         {active ? (
           <>
             {workItem && (
@@ -92,7 +92,7 @@ export function BugStep2({ active, completed, locked, description: initialDesc, 
             {error && (
               <div className={styles.errorBox}>
                 <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                  <circle cx="12" cy="12" r="10" /><line x1="12" y1="8" x2="12" y2="12" /><line x1="12" y1="16" x2="12.01" y2="16" />
+                  <circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/>
                 </svg>
                 {error}
               </div>
@@ -112,14 +112,14 @@ export function BugStep2({ active, completed, locked, description: initialDesc, 
                   {loading ? (
                     <>
                       <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={styles.spinning}>
-                        <path d="M21 12a9 9 0 1 1-6.219-8.56" />
+                        <path d="M21 12a9 9 0 1 1-6.219-8.56"/>
                       </svg>
                       Gerando...
                     </>
                   ) : (
                     <>
                       <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                        <path d="M12 2a10 10 0 1 0 10 10H12V2z" /><path d="M12 2a10 10 0 0 1 10 10" />
+                        <path d="M12 2a10 10 0 1 0 10 10H12V2z"/><path d="M12 2a10 10 0 0 1 10 10"/>
                       </svg>
                       Confirmar e Gerar
                     </>

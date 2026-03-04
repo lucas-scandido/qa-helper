@@ -11,7 +11,6 @@ interface BugReviewModalProps {
 export function BugReviewModal({ bugData, onCancel, onConfirm }: BugReviewModalProps) {
   const [title, setTitle] = useState(bugData.generatedTitle)
   const [description, setDescription] = useState(bugData.generatedDescription)
-  const [steps, setSteps] = useState(bugData.generatedSteps)
   const [expected, setExpected] = useState(bugData.generatedExpected)
 
   return (
@@ -38,8 +37,6 @@ export function BugReviewModal({ bugData, onCancel, onConfirm }: BugReviewModalP
           <div className={styles.field}>
             <label className={styles.fieldLabel}>Descrição</label>
             <textarea className={styles.fieldTextarea} value={description} onChange={e => setDescription(e.target.value)} rows={4} />
-            <label className={styles.fieldSubLabel}>Passos de Reprodução</label>
-            <textarea className={styles.fieldTextarea} value={steps} onChange={e => setSteps(e.target.value)} rows={5} />
           </div>
 
           <div className={styles.field}>
@@ -52,7 +49,7 @@ export function BugReviewModal({ bugData, onCancel, onConfirm }: BugReviewModalP
           <button className={styles.btnGhost} onClick={onCancel}>Cancelar</button>
           <button
             className={styles.btnPrimary}
-            onClick={() => onConfirm({ generatedTitle: title, generatedDescription: description, generatedSteps: steps, generatedExpected: expected })}
+            onClick={() => onConfirm({ generatedTitle: title, generatedDescription: description, generatedExpected: expected })}
           >
             Confirmar e Continuar
           </button>

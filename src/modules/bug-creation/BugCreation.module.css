@@ -1,5 +1,6 @@
 .page {
-  max-width: 860px;
+  max-width: 760px;
+  margin: 0 auto;
 }
 
 .header {

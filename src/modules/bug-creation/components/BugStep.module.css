@@ -267,9 +267,17 @@
 }
 
 .generatedTitle {
-  font-size: 15px;
-  font-weight: 700;
-  color: var(--text-primary);
+  font-size: 13px;
+  font-weight: 400;
+  color: var(--text-secondary);
+  line-height: 1.6;
+  font-family: 'Poppins', sans-serif;
+}
+
+.generatedText {
+  font-size: 13px;
+  color: var(--text-secondary);
+  line-height: 1.6;
   font-family: 'Poppins', sans-serif;
 }
 
@@ -460,4 +468,54 @@
   text-align: right;
   margin-top: 4px;
   font-family: 'Poppins', sans-serif;
+}
+
+/* ─── Ordered list (passos) ───────────────────────────────────────────────── */
+.generatedOl {
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.generatedOlItem {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+  font-size: 13px;
+  color: var(--text-secondary);
+  line-height: 1.6;
+  font-family: 'Poppins', sans-serif;
+}
+
+.generatedOlNum {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text-muted);
+  font-family: 'Poppins', sans-serif;
+  flex-shrink: 0;
+}
+
+/* ─── Unordered list (resultado esperado) ─────────────────────────────────── */
+.generatedUl {
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.generatedUlItem {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+  font-size: 13px;
+  color: var(--text-secondary);
+  line-height: 1.6;
+  font-family: 'Poppins', sans-serif;
+}
+
+.generatedDash {
+  color: var(--text-muted);
+  font-size: 13px;
+  flex-shrink: 0;
 }

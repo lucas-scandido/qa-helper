@@ -71,7 +71,7 @@ export function BugCreation() {
     setCurrentStep(3)
   }
 
-  const handleRegenerate = async () => {
+  const handleRegenerate = async (): Promise<void> => {
     if (!workItem || !bugData.description) return
 
     try {

@@ -2,16 +2,18 @@ import type { IdentificationData } from '../BugCreation'
 import styles from './BugModal.module.css'
 
 const severities = [
-  { value: 'critical', label: 'Critical', color: '#F87171' },
-  { value: 'high',     label: 'High',     color: '#FB923C' },
-  { value: 'medium',   label: 'Medium',   color: '#FBBF24' },
-  { value: 'low',      label: 'Low',      color: '#4ADE80' },
+  { value: '1- Critical', label: 'Critical', color: '#F87171' },
+  { value: '2- High',     label: 'High',     color: '#FB923C' },
+  { value: '3- Medium',   label: 'Medium',   color: '#FBBF24' },
+  { value: '4- Low',      label: 'Low',      color: '#4ADE80' },
 ]
 
 const stepIdentifications = [
-  { value: 'quality_analysis', label: 'Quality Analysis' },
-  { value: 'development',      label: 'Development' },
-  { value: 'review',           label: 'Review' },
+  { value: 'Deployment',       label: 'Deployment' },
+  { value: 'In Production',    label: 'In Production' },
+  { value: 'Quality Analysis', label: 'Quality Analysis' },
+  { value: 'Review',           label: 'Review' },
+  { value: 'Validation',       label: 'Validation' },
 ]
 
 interface BugIdentificationModalProps {
