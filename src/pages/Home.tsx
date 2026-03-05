@@ -116,11 +116,6 @@ export function Home() {
           </div>
 
           <BugStatsCard />
-
-          <footer className={styles.footer}>
-            <span className={styles.footerDot} />
-            <span className={styles.footerText}>v0.1.0</span>
-          </footer>
         </aside>
 
         {/* ── Separador vertical ── */}
