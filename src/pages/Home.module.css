@@ -23,15 +23,6 @@
   margin-bottom: 48px;
 }
 
-.date {
-  font-size: 12px;
-  font-weight: 500;
-  color: var(--text-muted);
-  text-transform: uppercase;
-  letter-spacing: 0.09em;
-  margin-bottom: 12px;
-}
-
 .appTitle {
   font-family: 'Outfit', sans-serif;
   font-size: clamp(40px, 5vw, 62px);

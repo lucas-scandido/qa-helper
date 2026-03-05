@@ -90,9 +90,6 @@ export function Sidebar() {
           </svg>
         )}
       </button>
-
-      {/* Avatar */}
-      <div className={styles.avatar} title="Usuário">LC</div>
     </aside>
   )
 }

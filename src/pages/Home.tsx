@@ -27,11 +27,11 @@ const modules = [
     ),
   },
   {
-    id: 'coming-soon-1',
-    title: 'Em breve',
-    description: 'Novo módulo chegando em breve.',
+    id: 'create-task-and-mission',
+    title: 'Criação de Tarefas/Missões',
+    description: 'Crie tarefas e missões de forma eficiente, diversificando tipos e categorias.',
     accentColor: 'rgb(253, 157, 30)',
-    features: [],
+    features: ['Agilidade na criação de massa de dados.'],
     locked: true,
     icon: (
       <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
@@ -40,11 +40,11 @@ const modules = [
     ),
   },
   {
-    id: 'coming-soon-2',
-    title: 'Em breve',
-    description: 'Novo módulo chegando em breve.',
+    id: 'test-case-management',
+    title: 'Gestão de Test Cases',
+    description: 'Gerencie Test Cases de Work Items fechados, identificando pendências e realizando ajustes em massa.',
     accentColor: 'rgb(253, 157, 30)',
-    features: [],
+    features: ['Identificação rápida de Test Cases em aberto.'],
     locked: true,
     icon: (
       <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
@@ -56,12 +56,6 @@ const modules = [
 
 export function Home() {
   const navigate = useNavigate()
-  const today = new Date().toLocaleDateString('pt-BR', {
-    weekday: 'long',
-    day: '2-digit',
-    month: 'long',
-    year: 'numeric',
-  })
 
   return (
     <div className={styles.page}>
@@ -72,7 +66,6 @@ export function Home() {
 
       {/* Header */}
       <header className={`${styles.header} animate-fade-up`}>
-        <p className={styles.date}>{today}</p>
         <h1 className={`${styles.appTitle} font-title`}>QA Helper</h1>
         <p className={styles.appSubtitle}>Commercials</p>
         <p className={styles.subtitle}>
