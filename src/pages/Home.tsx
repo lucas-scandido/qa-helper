@@ -54,54 +54,98 @@ const modules = [
   },
 ]
 
+function formatMonthYear(date: Date): string {
+  return date
+    .toLocaleString('pt-BR', { month: 'short', year: 'numeric' })
+    .replace(' de ', '/')
+    .replace('.', '')
+}
+
+function BugStatsCard() {
+  const now = new Date()
+  const count = Number(sessionStorage.getItem('bugs_created_count') ?? 0)
+
+  const firstDateRaw = sessionStorage.getItem('bugs_created_first_date')
+  const firstDate = firstDateRaw ? new Date(firstDateRaw) : now
+
+  const startLabel = formatMonthYear(firstDate)
+  const endLabel = formatMonthYear(now)
+
+  const periodLabel = `${startLabel} até ${endLabel}`
+
+  return (
+    <div className={styles.statsCard}>
+      <div className={styles.statsTop}>
+        <p className={styles.statsTitle}>Bugs criados por IA</p>
+        <span className={styles.statsCount}>{count}</span>
+      </div>
+      <div className={styles.statsFooter}>
+        <span className={styles.statsPeriod}>Período: {periodLabel}</span>
+      </div>
+    </div>
+  )
+}
+
 export function Home() {
   const navigate = useNavigate()
 
   return (
     <div className={styles.page}>
+      <div className={styles.layout}>
 
-      {/* Background decoration */}
-      <div className={styles.bgGrid} />
-      <div className={styles.bgGlow} />
+        {/* ── Coluna esquerda ── */}
+        <aside className={`${styles.aside} animate-fade-up`}>
+          <div className={styles.asideHeader}>
+            <h1 className={`${styles.appTitle} font-title`}>QA Helper</h1>
+            <p className={styles.appSubtitle}>Commercials</p>
+            <div className={styles.divider} />
+            <p className={styles.subtitle}>
+              Ferramenta para simplificar e automatizar operações do dia a dia, oferecendo mais controle, segurança e agilidade na gestão de testes e processos.
+            </p>
+          </div>
 
-      {/* Header */}
-      <header className={`${styles.header} animate-fade-up`}>
-        <h1 className={`${styles.appTitle} font-title`}>QA Helper</h1>
-        <p className={styles.appSubtitle}>Commercials</p>
-        <p className={styles.subtitle}>
-          Ferramenta para simplificar e automatizar operações do dia a dia, oferecendo mais controle, segurança e agilidade na gestão de testes e processos.
-        </p>
-      </header>
+          <BugStatsCard />
 
-      {/* Divider */}
-      <div className={styles.divider} />
+          <footer className={styles.footer}>
+            <span className={styles.footerDot} />
+            <span className={styles.footerText}>v0.1.0</span>
+          </footer>
+        </aside>
 
-      {/* Section label */}
-      <div className={`${styles.sectionLabel} animate-fade-up`} style={{ animationDelay: '0.1s' }}>
-        <span className={styles.sectionLabelText}>Módulos disponíveis</span>
+        {/* ── Separador vertical ── */}
+        <div className={styles.separator} />
+
+        {/* ── Coluna direita ── */}
+        <section className={styles.content}>
+
+          {/* Espaçador que replica a altura do asideHeader e ancora "Início" na base */}
+          <div className={styles.contentSpacer}>
+            <div className={`${styles.pageLabel} animate-fade-up`}>
+              <span className={styles.pageLabelText}>Início</span>
+            </div>
+          </div>
+
+          <div className={`${styles.sectionLabel} animate-fade-up`}>
+            <span className={styles.sectionLabelText}>Módulos disponíveis</span>
+          </div>
+
+          <div className={`${styles.grid} animate-fade-up`} style={{ animationDelay: '0.1s' }}>
+            {modules.map(module => (
+              <ModuleCard
+                key={module.id}
+                title={module.title}
+                description={module.description}
+                icon={module.icon}
+                accentColor={module.accentColor}
+                features={module.features}
+                locked={module.locked}
+                onClick={() => module.id === 'bug-creation' ? navigate('/criar-bugs') : undefined}
+              />
+            ))}
+          </div>
+        </section>
+
       </div>
-
-      {/* Cards grid */}
-      <div className={`${styles.grid} animate-fade-up`} style={{ animationDelay: '0.18s' }}>
-        {modules.map(module => (
-          <ModuleCard
-            key={module.id}
-            title={module.title}
-            description={module.description}
-            icon={module.icon}
-            accentColor={module.accentColor}
-            features={module.features}
-            locked={module.locked}
-            onClick={() => module.id === 'bug-creation' ? navigate('/criar-bugs') : undefined}
-          />
-        ))}
-      </div>
-
-      {/* Footer */}
-      <footer className={styles.footer}>
-        <span className={styles.footerDot} />
-        <span className={styles.footerText}>Sistema operacional — v0.1.0</span>
-      </footer>
     </div>
   )
 }

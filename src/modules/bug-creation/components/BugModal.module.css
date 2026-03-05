@@ -40,7 +40,7 @@
 }
 
 .modalTitle {
-  font-family: 'Poppins', sans-serif;
+  font-family: 'IBM Plex Sans', sans-serif;
   font-size: 17px;
   font-weight: 700;
   color: var(--text-primary);
@@ -95,7 +95,7 @@
   text-transform: uppercase;
   letter-spacing: 0.08em;
   color: var(--text-secondary);
-  font-family: 'Poppins', sans-serif;
+  font-family: 'IBM Plex Sans', sans-serif;
 }
 
 .fieldInput {
@@ -106,7 +106,7 @@
   background: var(--bg-base);
   color: var(--text-primary);
   font-size: 14px;
-  font-family: 'Poppins', sans-serif;
+  font-family: 'IBM Plex Sans', sans-serif;
   outline: none;
   transition: border-color var(--transition-fast);
 }
@@ -121,7 +121,7 @@
   text-transform: uppercase;
   letter-spacing: 0.07em;
   color: var(--text-muted);
-  font-family: 'Poppins', sans-serif;
+  font-family: 'IBM Plex Sans', sans-serif;
   margin-top: 12px;
 }
 
@@ -132,7 +132,7 @@
   background: var(--bg-base);
   color: var(--text-primary);
   font-size: 13px;
-  font-family: 'Poppins', sans-serif;
+  font-family: 'IBM Plex Sans', sans-serif;
   resize: vertical;
   outline: none;
   line-height: 1.7;
@@ -162,7 +162,7 @@
   color: var(--text-secondary);
   font-size: 13px;
   font-weight: 500;
-  font-family: 'Poppins', sans-serif;
+  font-family: 'IBM Plex Sans', sans-serif;
   cursor: pointer;
   transition: all var(--transition-fast);
 }
@@ -216,7 +216,7 @@
   color: #fff;
   font-size: 13px;
   font-weight: 600;
-  font-family: 'Poppins', sans-serif;
+  font-family: 'IBM Plex Sans', sans-serif;
   border: none;
   cursor: pointer;
   transition: background var(--transition-fast), opacity var(--transition-fast);
@@ -239,7 +239,7 @@
   color: var(--text-muted);
   font-size: 13px;
   font-weight: 500;
-  font-family: 'Poppins', sans-serif;
+  font-family: 'IBM Plex Sans', sans-serif;
   border: none;
   cursor: pointer;
   transition: color var(--transition-fast);

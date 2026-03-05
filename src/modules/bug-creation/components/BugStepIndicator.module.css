@@ -34,7 +34,7 @@
   font-size: 13px;
   font-weight: 700;
   color: var(--text-muted);
-  font-family: 'Poppins', sans-serif;
+  font-family: 'IBM Plex Sans', sans-serif;
   flex-shrink: 0;
   transition: all var(--transition-normal);
 }
@@ -43,7 +43,7 @@
   font-size: 13px;
   font-weight: 600;
   color: var(--text-muted);
-  font-family: 'Poppins', sans-serif;
+  font-family: 'IBM Plex Sans', sans-serif;
   transition: color var(--transition-normal);
 }
 
