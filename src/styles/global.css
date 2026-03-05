@@ -72,7 +72,7 @@ img, svg {
 
   /* Status */
   --status-success: #4ADE80;
-  --status-warning: #FBBF24;
+  --status-warning: #F59E0B; /* ← diferenciado do accent laranja */
   --status-danger:  #F87171;
   --status-info:    #60A5FA;
 
@@ -109,22 +109,31 @@ img, svg {
   --bg-overlay:     rgba(0, 0, 0, 0.03);
   --bg-hover:       rgba(0, 0, 0, 0.05);
 
+  /* Borders */
   --border-subtle:  rgba(0, 0, 0, 0.07);
   --border-default: rgba(0, 0, 0, 0.12);
   --border-strong:  rgba(0, 0, 0, 0.22);
 
+  /* Text */
   --text-primary:   #111111;
   --text-secondary: #555555;
   --text-muted:     #AAAAAA;
   --text-disabled:  #CCCCCC;
 
-  /* Accent — orange */
+  /* Accent — orange com contraste ajustado para fundo claro */
   --accent:         rgb(253, 157, 30);
   --accent-hover:   rgb(253, 184, 95);
   --accent-dim:     rgba(253, 157, 30, 0.10);
   --accent-border:  rgba(253, 157, 30, 0.30);
-  --accent-text:    rgb(210, 120, 10);
+  --accent-text:    rgb(234, 130, 10); /* ← mais escuro para contraste no light */
 
+  /* Status — saturados para melhor contraste em fundo claro */
+  --status-success: #16A34A;
+  --status-warning: #D97706; /* ← âmbar escuro para light */
+  --status-danger:  #DC2626;
+  --status-info:    #2563EB;
+
+  /* Shadows */
   --shadow-sm:   0 2px 8px rgba(0, 0, 0, 0.06);
   --shadow-md:   0 8px 32px rgba(0, 0, 0, 0.08);
   --shadow-lg:   0 20px 60px rgba(0, 0, 0, 0.10);
