@@ -46,6 +46,12 @@ export function BugStep1({ active, completed, itemId: initialId, onSubmit }: Bug
     if (result) onSubmit(String(result.id), result)
   }
 
+  const handleCancel = () => {
+    setResult(null)
+    setValue('')
+    setError(null)
+  }
+
   return (
     <div className={`${styles.stepBlock} ${active ? styles.stepActive : ''}`}>
       <div className={styles.stepHeader}>
@@ -78,15 +84,10 @@ export function BugStep1({ active, completed, itemId: initialId, onSubmit }: Bug
                 />
                 <button className={styles.btnPrimary} onClick={handleSearch} disabled={!value.trim() || loading}>
                   {loading ? (
-                    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={styles.spinning}>
-                      <path d="M21 12a9 9 0 1 1-6.219-8.56"/>
+                    <svg className={styles.spinning} width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                      <path d="M21 12a9 9 0 1 1-6.219-8.56" />
                     </svg>
-                  ) : (
-                    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                      <circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/>
-                    </svg>
-                  )}
-                  {loading ? 'Buscando...' : 'Buscar'}
+                  ) : 'Buscar'}
                 </button>
               </div>
             </div>
@@ -94,50 +95,53 @@ export function BugStep1({ active, completed, itemId: initialId, onSubmit }: Bug
             {error && (
               <div className={styles.errorBox}>
                 <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                  <circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/>
+                  <circle cx="12" cy="12" r="10" /><line x1="12" y1="8" x2="12" y2="12" /><line x1="12" y1="16" x2="12.01" y2="16" />
                 </svg>
                 {error}
               </div>
             )}
 
             {result && (
-              <div className={styles.resultCard}>
-                {/* Header */}
-                <div className={styles.resultFoundHeader}>
-                  <div className={styles.resultFoundIcon}>
-                    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-                      <polyline points="20 6 9 17 4 12"/>
-                    </svg>
-                  </div>
-                  <span className={styles.resultFoundLabel}>Item Encontrado</span>
-                </div>
-
-                {/* Table */}
-                <div className={styles.resultTable}>
-                  {[
-                    { key: 'ID:', value: String(result.id) },
-                    { key: 'Tipo:', value: result.type },
-                    { key: 'Título:', value: result.title },
-                    { key: 'Status:', value: result.state },
-                    { key: 'Responsável:', value: result.assignedTo },
-                  ].map(row => (
-                    <div key={row.key} className={styles.resultRow}>
-                      <span className={styles.resultKey}>{row.key}</span>
-                      <span className={styles.resultValue}>{row.value}</span>
+              <>
+                {/* ─── Result card — sem botões internos ─── */}
+                <div className={styles.resultCard}>
+                  {/* Header */}
+                  <div className={styles.resultFoundHeader}>
+                    <div className={styles.resultFoundIcon}>
+                      <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                        <polyline points="20 6 9 17 4 12" />
+                      </svg>
                     </div>
-                  ))}
+                    <span className={styles.resultFoundLabel}>Item Encontrado</span>
+                  </div>
+
+                  {/* Table */}
+                  <div className={styles.resultTable}>
+                    {[
+                      { key: 'ID:', value: String(result.id) },
+                      { key: 'Tipo:', value: result.type },
+                      { key: 'Título:', value: result.title },
+                      { key: 'Status:', value: result.state },
+                      { key: 'Responsável:', value: result.assignedTo },
+                    ].map(row => (
+                      <div key={row.key} className={styles.resultRow}>
+                        <span className={styles.resultKey}>{row.key}</span>
+                        <span className={styles.resultValue}>{row.value}</span>
+                      </div>
+                    ))}
+                  </div>
                 </div>
 
-                {/* Actions */}
-                <div className={styles.resultActions}>
-                  <button className={styles.btnSecondary} onClick={() => { setResult(null); setValue('') }}>
+                {/* ─── Botões fora do card ─── */}
+                <div className={styles.actionRow}>
+                  <button className={styles.btnGhost} onClick={handleCancel}>
                     Cancelar
                   </button>
                   <button className={styles.btnPrimary} onClick={handleNext}>
                     Próximo
                   </button>
                 </div>
-              </div>
+              </>
             )}
           </>
         ) : (

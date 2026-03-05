@@ -299,13 +299,20 @@
   border: 1px solid var(--border-default);
   border-radius: var(--radius-md);
   overflow: hidden;
-  background: var(--bg-surface);
+  background: var(--bg-elevated);
   animation: fadeUp 0.25s ease both;
 }
 
 @keyframes fadeUp {
-  from { opacity: 0; transform: translateY(6px); }
-  to   { opacity: 1; transform: translateY(0); }
+  from {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 .resultFoundHeader {
@@ -414,7 +421,9 @@
 
 /* ─── Spinner ─────────────────────────────────────────────────────────────── */
 @keyframes spin {
-  to { transform: rotate(360deg); }
+  to {
+    transform: rotate(360deg);
+  }
 }
 
 .spinning {
@@ -425,13 +434,14 @@
 .linkedItem {
   display: flex;
   align-items: center;
-  gap: 8px;
-  padding: 10px 14px;
+  gap: 4px;
+  padding: 7px 12px;
   border-radius: var(--radius-sm);
   background: var(--accent-dim);
   border: 1px solid var(--accent-border);
   margin-bottom: 16px;
-  flex-wrap: wrap;
+  min-width: 0;
+  overflow: hidden;
 }
 
 .linkedItemLabel {
@@ -459,6 +469,7 @@
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
+  min-width: 0;
 }
 
 /* ─── Char count ──────────────────────────────────────────────────────────── */
