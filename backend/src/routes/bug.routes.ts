@@ -1,59 +1,63 @@
 import type { FastifyInstance, FastifyRequest, FastifyReply } from 'fastify'
-import { searchItem, generateBug, createBugHandler } from '../controllers/bug.controller'
+import { searchItem, generateBug, createBugHandler, getBugStatsHandler } from '../controllers/bug.controller'
 import { generateBugSchema, createBugSchema } from '../schemas/bug.schema'
 import type { GenerateBugInput, CreateBugInput } from '../schemas/bug.schema'
 
 export async function bugRoutes(app: FastifyInstance) {
 
-  // GET /api/bugs/search/:id — busca work item por ID
-  // Params sempre chegam como string no Fastify, convertemos no controller
-  app.get<{ Params: { id: string } }>('/search/:id', async (
-    req: FastifyRequest<{ Params: { id: string } }>,
-    reply: FastifyReply
-  ) => {
-    const id = Number(req.params.id)
+    // GET /api/bugs/stats — total de bugs criados por IA nos últimos 90 dias
+    app.get('/stats', async (_req: FastifyRequest, reply: FastifyReply) => {
+        return getBugStatsHandler(reply)
+    })
 
-    if (!Number.isInteger(id) || id <= 0) {
-      return reply.status(400).send({
-        success: false,
-        error: 'ID deve ser um número inteiro maior que zero',
-      })
-    }
+    // GET /api/bugs/search/:id — busca work item por ID
+    app.get<{ Params: { id: string } }>('/search/:id', async (
+        req: FastifyRequest<{ Params: { id: string } }>,
+        reply: FastifyReply
+    ) => {
+        const id = Number(req.params.id)
 
-    return searchItem(id, reply)
-  })
+        if (!Number.isInteger(id) || id <= 0) {
+            return reply.status(400).send({
+                success: false,
+                error: 'ID deve ser um número inteiro maior que zero',
+            })
+        }
 
-  // POST /api/bugs/generate — gera bug com IA
-  app.post<{ Body: GenerateBugInput }>('/generate', async (
-    req: FastifyRequest<{ Body: GenerateBugInput }>,
-    reply: FastifyReply
-  ) => {
-    const parsed = generateBugSchema.safeParse(req.body)
+        return searchItem(id, reply)
+    })
 
-    if (!parsed.success) {
-      return reply.status(400).send({
-        success: false,
-        error: parsed.error.errors.map(e => e.message).join(', '),
-      })
-    }
+    // POST /api/bugs/generate — gera bug com IA
+    app.post<{ Body: GenerateBugInput }>('/generate', async (
+        req: FastifyRequest<{ Body: GenerateBugInput }>,
+        reply: FastifyReply
+    ) => {
+        const parsed = generateBugSchema.safeParse(req.body)
 
-    return generateBug(parsed.data, reply)
-  })
+        if (!parsed.success) {
+            return reply.status(400).send({
+                success: false,
+                error: parsed.error.errors.map(e => e.message).join(', '),
+            })
+        }
 
-  // POST /api/bugs/create — cria bug no Azure DevOps
-  app.post<{ Body: CreateBugInput }>('/create', async (
-    req: FastifyRequest<{ Body: CreateBugInput }>,
-    reply: FastifyReply
-  ) => {
-    const parsed = createBugSchema.safeParse(req.body)
+        return generateBug(parsed.data, reply)
+    })
 
-    if (!parsed.success) {
-      return reply.status(400).send({
-        success: false,
-        error: parsed.error.errors.map(e => e.message).join(', '),
-      })
-    }
+    // POST /api/bugs/create — cria bug no Azure DevOps
+    app.post<{ Body: CreateBugInput }>('/create', async (
+        req: FastifyRequest<{ Body: CreateBugInput }>,
+        reply: FastifyReply
+    ) => {
+        const parsed = createBugSchema.safeParse(req.body)
 
-    return createBugHandler(parsed.data, reply)
-  })
+        if (!parsed.success) {
+            return reply.status(400).send({
+                success: false,
+                error: parsed.error.errors.map(e => e.message).join(', '),
+            })
+        }
+
+        return createBugHandler(parsed.data, reply)
+    })
 }

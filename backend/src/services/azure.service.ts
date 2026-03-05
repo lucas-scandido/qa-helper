@@ -131,3 +131,34 @@ export async function createBug(params: CreateBugParams, parentItem: WorkItem): 
         throw error
     }
 }
+
+// ─── Contar bugs criados por IA nos últimos 90 dias via WIQL ─────────────────
+
+export async function queryAIBugsCount(): Promise<number> {
+    const wiqlPayload = {
+        query: `
+            SELECT [System.Id]
+            FROM workitems
+            WHERE
+                [System.TeamProject] = '${env.AZURE_PROJECT}'
+                AND [System.CreatedDate] >= @StartOfYear
+                AND [System.WorkItemType] = 'Bug'
+                AND [Custom.Standard_AI_Tool] = 'Other'
+                AND [Custom.Standard_AI_Tool_Other] = 'Other'
+        `,
+    }
+
+    try {
+        const { data } = await azureClient.post<{
+            workItems: { id: number }[]
+        }>('/wit/wiql?api-version=7.0', wiqlPayload)
+
+        return data.workItems?.length ?? 0
+    } catch (error) {
+        if (axios.isAxiosError(error)) {
+            const message = error.response?.data?.message ?? error.message
+            throw new Error(`Erro ao executar query WIQL: ${message}`)
+        }
+        throw error
+    }
+}

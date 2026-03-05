@@ -1,6 +1,5 @@
 .page {
   position: relative;
-  min-height: 100vh;
 }
 
 /* ── Layout split ───────────────────────────────── */
@@ -8,7 +7,6 @@
   display: grid;
   grid-template-columns: 260px 1px 1fr;
   gap: 0 40px;
-  min-height: 100vh;
   align-items: start;
 }
 
@@ -59,7 +57,7 @@
 
 .divider {
   height: 1px;
-  background: linear-gradient(90deg, var(--accent-border), transparent);
+  background: linear-gradient(90deg, var(--border-subtle), transparent);
   margin-bottom: 20px;
 }
 
@@ -72,9 +70,9 @@
 
 /* ── Stats card ─────────────────────────────────── */
 .statsCard {
-  background: var(--bg-overlay);
-  border: 1px solid var(--border-subtle);
-  border-radius: var(--radius-md);
+  background: var(--bg-surface);
+  border: 1px solid var(--border-default);
+  border-radius: var(--radius-lg);
   padding: 12px 16px;
   display: flex;
   flex-direction: column;
@@ -90,7 +88,7 @@
 
 .statsTitle {
   font-family: 'IBM Plex Sans', sans-serif;
-  font-size: 20px;
+  font-size: 18px;
   font-weight: 700;
   color: var(--text-primary);
   letter-spacing: -0.01em;
@@ -98,7 +96,7 @@
 
 .statsCount {
   font-family: 'IBM Plex Sans', sans-serif;
-  font-size: 48px;
+  font-size: 45px;
   font-weight: 800;
   letter-spacing: -0.04em;
   line-height: 1;
@@ -112,8 +110,7 @@
 
 .statsPeriod {
   font-family: 'IBM Plex Sans', sans-serif;
-  font-size: 11px;
-  font-weight: 500;
+  font-size: 12px;
   color: var(--text-muted);
 }
 
