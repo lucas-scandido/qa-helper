@@ -61,6 +61,17 @@ function formatMonthYear(date: Date): string {
     .replace('.', '')
 }
 
+function formatFullDate(date: Date): string {
+  return date
+    .toLocaleDateString('pt-BR', {
+      weekday: 'long',
+      day: 'numeric',
+      month: 'long',
+      year: 'numeric',
+    })
+    .replace(/^\w/, c => c.toUpperCase())
+}
+
 function BugStatsCard() {
   const now = new Date()
   const count = Number(sessionStorage.getItem('bugs_created_count') ?? 0)
@@ -118,15 +129,16 @@ export function Home() {
         {/* ── Coluna direita ── */}
         <section className={styles.content}>
 
-          {/* Espaçador que replica a altura do asideHeader e ancora "Início" na base */}
           <div className={styles.contentSpacer}>
             <div className={`${styles.pageLabel} animate-fade-up`}>
               <span className={styles.pageLabelText}>Início</span>
+              <p className={styles.pageLabelDate}>{formatFullDate(new Date())}</p>
             </div>
           </div>
 
           <div className={`${styles.sectionLabel} animate-fade-up`}>
             <span className={styles.sectionLabelText}>Módulos disponíveis</span>
+            <div className={styles.sectionLabelLine} />
           </div>
 
           <div className={`${styles.grid} animate-fade-up`} style={{ animationDelay: '0.1s' }}>

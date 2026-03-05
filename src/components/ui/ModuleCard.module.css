@@ -4,8 +4,10 @@
   border: 1px solid var(--border-default);
   border-top: 3px solid var(--card-accent);
   border-radius: var(--radius-lg);
-  padding: 24px;
-  cursor: pointer;
+  padding: 28px;
+  display: flex;
+  flex-direction: column;
+  min-height: 260px;
   transition:
     transform var(--transition-normal),
     box-shadow var(--transition-normal);
@@ -22,34 +24,52 @@
   filter: grayscale(1);
 }
 
-.title {
-  font-family: 'IBM Plex Sans', sans-serif;
-  font-size: 16px;
-  font-weight: 700;
-  color: var(--text-primary);
-  margin-bottom: 10px;
-  letter-spacing: -0.01em;
-}
-
-.description {
-  font-size: 13px;
-  line-height: 1.6;
-  color: var(--text-secondary);
-  margin-bottom: 20px;
-}
-
-.bottomRow {
+/* ── Header: icon + title ── */
+.header {
   display: flex;
   align-items: center;
-  justify-content: space-between;
   gap: 12px;
+  margin-bottom: 16px;
 }
 
+.iconWrap {
+  color: var(--card-accent);
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 44px;
+  height: 44px;
+  border-radius: var(--radius-md);
+  background: var(--card-accent-dim);
+  border: 1px solid var(--card-accent-border);
+}
+
+.title {
+  font-family: 'IBM Plex Sans', sans-serif;
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--text-primary);
+  letter-spacing: -0.01em;
+  line-height: 1.3;
+}
+
+/* ── Description ── */
+.description {
+  font-size: 13px;
+  line-height: 1.7;
+  color: var(--text-secondary);
+  margin-bottom: 16px;
+  flex: 1;
+}
+
+/* ── Features ── */
 .features {
   list-style: none;
   display: flex;
   flex-direction: column;
   gap: 6px;
+  margin-bottom: 24px;
 }
 
 .featureItem {
@@ -65,7 +85,47 @@
   flex-shrink: 0;
 }
 
-.iconWrap {
-  color: var(--card-accent);
-  flex-shrink: 0;
+/* ── Footer ── */
+.footer {
+  margin-top: auto;
+}
+
+/* ── Botão ── */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  height: 36px;
+  padding: 0 16px;
+  border-radius: var(--radius-sm);
+  background: var(--card-accent);
+  color: #fff;
+  font-family: 'IBM Plex Sans', sans-serif;
+  font-size: 13px;
+  font-weight: 600;
+  border: none;
+  cursor: pointer;
+  transition: opacity var(--transition-fast), transform var(--transition-fast);
+  white-space: nowrap;
+}
+
+.btn:hover {
+  opacity: 0.88;
+  transform: translateX(2px);
+}
+
+.btn:active {
+  opacity: 0.75;
+}
+
+.btnLocked {
+  background: var(--bg-elevated);
+  color: var(--text-muted);
+  cursor: default;
+  pointer-events: none;
+}
+
+.btnLocked:hover {
+  opacity: 1;
+  transform: none;
 }
