@@ -2,7 +2,6 @@
   position: fixed;
   inset: 0;
   background: rgba(0, 0, 0, 0.5);
-  backdrop-filter: blur(4px);
   z-index: 200;
   display: flex;
   align-items: center;
@@ -25,8 +24,15 @@
 }
 
 @keyframes slideUp {
-  from { opacity: 0; transform: translateY(20px) scale(0.98); }
-  to   { opacity: 1; transform: translateY(0) scale(1); }
+  from {
+    opacity: 0;
+    transform: translateY(20px) scale(0.98);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
 }
 
 /* Header */
@@ -247,4 +253,97 @@
 
 .btnGhost:hover {
   color: var(--text-primary);
+}
+
+/* ── Confirm Modal ─────────────────────────────── */
+
+.confirmOverlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.6);
+  z-index: 9999;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+  animation: fadeIn 0.15s ease both;
+}
+
+.confirmModal {
+  background: var(--bg-surface);
+  border: 1px solid var(--border-default);
+  border-radius: var(--radius-lg);
+  width: 100%;
+  max-width: 360px;
+  box-shadow: var(--shadow-lg);
+  animation: slideUp 0.2s cubic-bezier(0.4, 0, 0.2, 1) both;
+  overflow: hidden;
+}
+
+.confirmBody {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 28px 28px 20px;
+  gap: 12px;
+}
+
+.confirmIconWrap {
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  background: var(--accent-dim);
+  border: 1px solid rgba(253, 157, 30, 0.25);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.confirmIconWrap svg {
+  color: var(--accent);
+}
+
+.confirmText {
+  text-align: center;
+}
+
+.confirmTitle {
+  font-family: 'IBM Plex Sans', sans-serif;
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--text-primary);
+  letter-spacing: -0.01em;
+  margin-bottom: 6px;
+}
+
+.confirmDescription {
+  font-size: 13px;
+  color: var(--text-secondary);
+  line-height: 1.6;
+  font-family: 'IBM Plex Sans', sans-serif;
+}
+
+.confirmActions {
+  display: flex;
+  gap: 8px;
+  padding: 0 28px 24px;
+}
+
+.btnDanger {
+  flex: 1;
+  height: 40px;
+  border-radius: var(--radius-sm);
+  background: var(--accent);
+  color: #fff;
+  font-size: 13px;
+  font-weight: 600;
+  font-family: 'IBM Plex Sans', sans-serif;
+  border: none;
+  cursor: pointer;
+  transition: background var(--transition-fast);
+}
+
+.btnDanger:hover {
+  background: var(--accent-hover);
 }

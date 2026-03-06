@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react'
 import type { BugData } from '../BugCreation'
-import { BugConfirmModal } from './BugConfirmationModal'
+import { BugConfirmationModal } from './BugConfirmationModal'
 import styles from './BugStep.module.css'
 
 const severities = [
@@ -202,7 +202,7 @@ export function BugStep3({ active, locked, bugData, stepIdentification, onCancel
       </div>
 
       {showConfirm && (
-        <BugConfirmModal
+        <BugConfirmationModal
           onCancel={() => setShowConfirm(false)}
           onConfirm={() => {
             setShowConfirm(false)
