@@ -4,7 +4,6 @@ import { BugStep1 } from './components/BugStep1'
 import { BugStep2 } from './components/BugStep2'
 import { BugStep3 } from './components/BugStep3'
 import { BugReviewModal } from './components/BugReviewModal'
-import { BugIdentificationModal } from './components/BugIdentificationModal'
 import styles from './BugCreation.module.css'
 
 export type BugData = {
@@ -14,11 +13,7 @@ export type BugData = {
   generatedDescription: string
   generatedSteps: string
   generatedExpected: string
-}
-
-export type IdentificationData = {
-  severity: 'critical' | 'high' | 'medium' | 'low' | ''
-  stepIdentification: 'quality_analysis' | 'development' | 'review' | ''
+  generatedSeverity: string
 }
 
 interface WorkItemResult {
@@ -37,18 +32,22 @@ const initialBugData: BugData = {
   generatedDescription: '',
   generatedSteps: '',
   generatedExpected: '',
+  generatedSeverity: '',
+}
+
+function resolveStepIdentification(state: string): string {
+  if (state === 'Quality Analysis') return 'Quality Analysis'
+  if (state === 'Review') return 'Review'
+  if (state === 'Deployment') return 'Deployment'
+  if (state === 'Validation') return 'In Production'
+  return 'Development'
 }
 
 export function BugCreation() {
   const [currentStep, setCurrentStep] = useState(1)
   const [showReviewModal, setShowReviewModal] = useState(false)
-  const [showIdentificationModal, setShowIdentificationModal] = useState(false)
   const [workItem, setWorkItem] = useState<WorkItemResult | null>(null)
   const [bugData, setBugData] = useState<BugData>(initialBugData)
-  const [identification, setIdentification] = useState<IdentificationData>({
-    severity: '',
-    stepIdentification: '',
-  })
 
   const handleStep1Submit = (itemId: string, foundItem: WorkItemResult) => {
     setWorkItem(foundItem)
@@ -58,7 +57,7 @@ export function BugCreation() {
 
   const handleStep2Submit = (
     description: string,
-    generated: { title: string; description: string; expectedResult: string }
+    generated: { title: string; description: string; expectedResult: string; severity: string }
   ) => {
     setBugData(prev => ({
       ...prev,
@@ -67,6 +66,7 @@ export function BugCreation() {
       generatedDescription: generated.description,
       generatedSteps: '',
       generatedExpected: generated.expectedResult,
+      generatedSeverity: generated.severity,
     }))
     setCurrentStep(3)
   }
@@ -91,24 +91,42 @@ export function BugCreation() {
         generatedTitle: json.data.title,
         generatedDescription: json.data.description,
         generatedExpected: json.data.expectedResult,
+        generatedSeverity: json.data.severity,
       }))
     } catch {
       // silently fail — user can try again
     }
   }
 
-  const handleConfirmReview = (updatedData: Partial<BugData>) => {
-    setBugData(prev => ({ ...prev, ...updatedData }))
-    setShowReviewModal(false)
-    setShowIdentificationModal(true)
-  }
+  const handleConfirmReview = async (updatedData: Partial<BugData>): Promise<void> => {
+    if (!workItem) return
 
-  const handleFinalConfirm = () => {
-    setShowIdentificationModal(false)
+    const merged = { ...bugData, ...updatedData }
+    setBugData(merged)
+    setShowReviewModal(false)
+
+    const stepIdentification = resolveStepIdentification(workItem.state)
+
+    await fetch('http://localhost:3000/api/bugs/create', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        workItemId: workItem.id,
+        title: merged.generatedTitle,
+        description: merged.generatedDescription,
+        expectedResult: merged.generatedExpected,
+        severity: merged.generatedSeverity,
+        stepIdentification,
+        aiAccelerated: 'Yes',
+        aiTypeOfAssistance: 'Tests',
+        aiTool: 'Other',
+        aiToolOther: 'Other',
+      }),
+    })
+
     setCurrentStep(1)
     setBugData(initialBugData)
     setWorkItem(null)
-    setIdentification({ severity: '', stepIdentification: '' })
   }
 
   return (
@@ -152,23 +170,12 @@ export function BugCreation() {
         />
       </div>
 
-      {showReviewModal && (
+      {showReviewModal && workItem && (
         <BugReviewModal
           bugData={bugData}
+          workItemState={workItem.state}
           onCancel={() => setShowReviewModal(false)}
           onConfirm={handleConfirmReview}
-        />
-      )}
-
-      {showIdentificationModal && (
-        <BugIdentificationModal
-          identification={identification}
-          onChange={setIdentification}
-          onCancel={() => {
-            setShowIdentificationModal(false)
-            setShowReviewModal(true)
-          }}
-          onConfirm={handleFinalConfirm}
         />
       )}
     </div>

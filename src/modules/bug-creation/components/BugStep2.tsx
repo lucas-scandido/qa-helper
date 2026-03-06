@@ -14,7 +14,7 @@ interface BugStep2Props {
   locked: boolean
   description: string
   workItem: WorkItemResult | null
-  onSubmit: (description: string, generated: { title: string; description: string; expectedResult: string }) => void
+  onSubmit: (description: string, generated: { title: string; description: string; expectedResult: string; severity: string }) => void
   onCancel: () => void
 }
 
@@ -66,21 +66,13 @@ export function BugStep2({ active, completed, description: initialDesc, workItem
       <div className={`${styles.stepContent} ${!active && !completed ? styles.stepContentLocked : ''} ${completed ? styles.stepContentLocked : ''}`}>
         {active ? (
           <>
-            {workItem && (
-              <div className={styles.linkedItem}>
-                <span className={styles.linkedItemLabel}>Item vinculado:</span>
-                <span className={styles.linkedItemId}>#{workItem.id}</span>
-                <span className={styles.linkedItemTitle}>{workItem.title}</span>
-              </div>
-            )}
-
-            <p className={styles.stepHint}>Descreva brevemente o comportamento incorreto observado.</p>
+            <p className={styles.stepHint}>Descreva brevemente o bug encontrado para que a IA gere o card completo.</p>
 
             <div className={styles.fieldGroup}>
               <label className={styles.label}>Descrição</label>
               <textarea
                 className={styles.textarea}
-                placeholder="Ex: Ao clicar no botão de salvar, o sistema exibe uma mensagem de erro inesperada..."
+                placeholder="Ex: Ao clicar em salvar, o sistema retorna erro 500 sem mensagem ao usuário."
                 value={value}
                 onChange={e => setValue(e.target.value)}
                 rows={4}
@@ -99,30 +91,21 @@ export function BugStep2({ active, completed, description: initialDesc, workItem
             )}
 
             <div className={styles.actionRow}>
-              <button className={styles.btnGhost} onClick={onCancel} disabled={loading}>Cancelar</button>
-              <div className={styles.actionRowRight}>
-                <button className={styles.btnSecondary} onClick={() => setValue('')} disabled={!value.trim() || loading}>
-                  Limpar
-                </button>
-                <button
-                  className={styles.btnPrimary}
-                  onClick={handleConfirm}
-                  disabled={value.trim().length < 20 || value.length > 500 || loading}
-                >
-                  {loading ? (
-                    <>
-                      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={styles.spinning}>
-                        <path d="M21 12a9 9 0 1 1-6.219-8.56" />
-                      </svg>
-                      Gerando...
-                    </>
-                  ) : (
-                    <>
-                      Confirmar e Gerar
-                    </>
-                  )}
-                </button>
-              </div>
+              <button className={styles.btnGhost} onClick={onCancel}>Cancelar</button>
+              <button className={styles.btnPrimary} onClick={handleConfirm} disabled={value.trim().length < 20 || loading}>
+                {loading ? (
+                  <>
+                    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={styles.spinning}>
+                      <path d="M21 12a9 9 0 1 1-6.219-8.56" />
+                    </svg>
+                    Gerando...
+                  </>
+                ) : (
+                  <>
+                    Confirmar e Gerar
+                  </>
+                )}
+              </button>
             </div>
           </>
         ) : (

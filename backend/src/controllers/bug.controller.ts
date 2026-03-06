@@ -5,6 +5,14 @@ import { buildSystemPrompt, buildUserPrompt } from '../prompts/bug.prompt'
 import { identifyProductByAreaPath, buildProductContext } from '../products'
 import type { GenerateBugInput, CreateBugInput } from '../schemas/bug.schema'
 
+// ─── Helpers de mapeamento por estado ────────────────────────────────────────
+
+function resolveAiStageUsed(state: string): '1. Development' | '2. Code Review' | '3. Tests' {
+    if (state === 'Development') return '1. Development'
+    if (state === 'Review') return '2. Code Review'
+    return '3. Tests'
+}
+
 // ─── GET /api/bugs/search/:id ─────────────────────────────────────────────────
 
 export async function searchItem(id: number, reply: FastifyReply) {
@@ -69,7 +77,19 @@ export async function createBugHandler(input: CreateBugInput, reply: FastifyRepl
     }
 
     const created = await createBug(
-        { title, description, expectedResult, severity, stepIdentification, parentItem },
+        {
+            title,
+            description,
+            expectedResult,
+            severity,
+            stepIdentification,
+            aiAccelerated: 'Yes',
+            aiTypeOfAssistance: 'Tests',
+            aiStageUsed: resolveAiStageUsed(workItemSummary.state),
+            aiTool: 'Other',
+            aiToolOther: 'Other',
+            parentItem,
+        },
         parentItem
     )
 

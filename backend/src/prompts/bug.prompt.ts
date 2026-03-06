@@ -19,7 +19,8 @@ CONTRATO DE RESPOSTA:
   "titulo": "string (máx 120 caracteres)",
   "descricao": "string",
   "passosReproducao": ["string", "string"],
-  "resultadoEsperado": ["string", "string"]
+  "resultadoEsperado": ["string", "string"],
+  "severidade": "1- Critical" | "2- High" | "3- Medium" | "4- Low"
 }
 `.trim()
 }
@@ -75,6 +76,13 @@ REQUISITOS:
    - Array de strings com no máximo 3 itens
    - Objetivo e direto
 
+5. severidade
+   - Analisar o impacto do bug descrito e escolher automaticamente um dos valores: "1- Critical", "2- High", "3- Medium" ou "4- Low"
+   - 1- Critical: impede uso do sistema ou causa perda de dados
+   - 2- High: impacta funcionalidade principal mas tem contorno
+   - 3- Medium: impacta funcionalidade secundária
+   - 4- Low: problema cosmético ou de baixo impacto
+
 EXEMPLO DE RESPOSTA:
 {
   "titulo": "Ausência de mensagem de erro para upload de csv com valores inválidos",
@@ -89,7 +97,8 @@ EXEMPLO DE RESPOSTA:
     "O sistema deve validar os dados do arquivo .csv.",
     "Uma mensagem de erro deve ser exibida indicando os valores inválidos.",
     "O upload não deve ser concluído até que os dados sejam corrigidos."
-  ]
+  ],
+  "severidade": "2- High"
 }
 `.trim()
 }

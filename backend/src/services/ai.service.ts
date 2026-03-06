@@ -8,6 +8,7 @@ export interface GeneratedBug {
   descricao: string
   passosReproducao: string[]
   resultadoEsperado: string[]
+  severidade: '1- Critical' | '2- High' | '3- Medium' | '4- Low'
 }
 
 // ─── Configurações de retry ───────────────────────────────────────────────────
@@ -42,6 +43,11 @@ function validateGeneratedBug(data: unknown): GeneratedBug {
   if (!d.descricao || typeof d.descricao !== 'string') errors.push('"descricao" deve ser string')
   if (!Array.isArray(d.passosReproducao))              errors.push('"passosReproducao" deve ser array')
   if (!Array.isArray(d.resultadoEsperado))             errors.push('"resultadoEsperado" deve ser array')
+
+  const severidadesValidas = ['1- Critical', '2- High', '3- Medium', '4- Low']
+  if (!d.severidade || !severidadesValidas.includes(d.severidade as string)) {
+    errors.push('"severidade" deve ser 1- Critical, 2- High, 3- Medium ou 4- Low')
+  }
 
   if (typeof d.titulo === 'string' && d.titulo.length > 120) {
     errors.push(`"titulo" excede 120 caracteres (${d.titulo.length})`)
@@ -90,7 +96,6 @@ export async function generateBugWithAI(
         throw new Error('Resposta do gateway não contém bloco de texto')
       }
 
-      // Remove markdown se vier com backticks
       const clean = textBlock.text.replace(/```json\n?|\n?```/g, '').trim()
       const parsed: unknown = JSON.parse(clean)
 
@@ -132,5 +137,6 @@ export function formatGeneratedBug(bug: GeneratedBug) {
     title: bug.titulo,
     description: descriptionFormatted,
     expectedResult: expectedResultFormatted,
+    severity: bug.severidade,
   }
 }

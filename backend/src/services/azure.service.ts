@@ -33,6 +33,11 @@ export interface CreateBugParams {
     expectedResult: string
     severity: string
     stepIdentification: string
+    aiAccelerated: string
+    aiTypeOfAssistance: string
+    aiStageUsed: string
+    aiTool: string
+    aiToolOther: string
     parentItem: WorkItem
 }
 
@@ -101,6 +106,11 @@ export async function createBug(params: CreateBugParams, parentItem: WorkItem): 
         { op: 'add', path: '/fields/Custom.Standard_Bug_Expected_Result', value: params.expectedResult },
         { op: 'add', path: '/fields/Custom.Standard_Step_Identified', value: params.stepIdentification },
         { op: 'add', path: '/fields/Custom.Standard_Bug_Severity', value: params.severity },
+        { op: 'add', path: '/fields/Custom.Standard_AI_Accelerated', value: params.aiAccelerated },
+        { op: 'add', path: '/fields/Custom.Standard_AI_Type_of_Assistance', value: params.aiTypeOfAssistance },
+        { op: 'add', path: '/fields/Custom.Standard_AI_Stage_Used', value: params.aiStageUsed },
+        { op: 'add', path: '/fields/Custom.Standard_AI_Tool', value: params.aiTool },
+        { op: 'add', path: '/fields/Custom.Standard_AI_Tool_Other', value: params.aiToolOther },
         {
             op: 'add',
             path: '/relations/-',
@@ -156,8 +166,7 @@ export async function queryAIBugsCount(): Promise<number> {
         return data.workItems?.length ?? 0
     } catch (error) {
         if (axios.isAxiosError(error)) {
-            const message = error.response?.data?.message ?? error.message
-            throw new Error(`Erro ao executar query WIQL: ${message}`)
+            throw new Error(`Erro ao buscar estatísticas: ${error.response?.data?.message ?? error.message}`)
         }
         throw error
     }

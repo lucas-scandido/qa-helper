@@ -40,7 +40,7 @@ export function BugStep3({ active, locked, bugData, onCancel, onRegenerate, onCo
     <div className={`${styles.stepBlock} ${active ? styles.stepActive : ''}`}>
       <div className={styles.stepHeader}>
         <div className={`${styles.stepNumber} ${active ? styles.stepNumberActive : ''}`}>3</div>
-        <h2 className={styles.stepTitle}>Confirmar Bug</h2>
+        <h2 className={styles.stepTitle}>Revisar Bug</h2>
       </div>
 
       <div className={`${styles.stepContent} ${locked ? styles.stepContentLocked : ''}`}>
@@ -113,7 +113,7 @@ export function BugStep3({ active, locked, bugData, onCancel, onRegenerate, onCo
                   {regenerating ? 'Gerando...' : 'Gerar Nova Descrição'}
                 </button>
                 <button className={styles.btnPrimary} onClick={onConfirm}>
-                  Confirmar
+                  Confirmar Revisão
                 </button>
               </div>
             </div>

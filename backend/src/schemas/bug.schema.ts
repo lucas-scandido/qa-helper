@@ -32,13 +32,19 @@ export const createBugSchema = z.object({
     description: z.string().min(1),
     expectedResult: z.string().min(1),
 
-    severity: z.enum(['Critical', 'High', 'Medium', 'Low'], {
+    severity: z.enum(['1- Critical', '2- High', '3- Medium', '4- Low'], {
         required_error: 'Severidade é obrigatória',
     }),
 
-    stepIdentification: z.enum(['Quality Analysis', 'Development', 'Review'], {
+    stepIdentification: z.enum(['Quality Analysis', 'Development', 'Review', 'Deployment', 'In Production'], {
         required_error: 'Step de identificação é obrigatório',
     }),
+
+    aiAccelerated: z.literal('Yes'),
+    aiTypeOfAssistance: z.literal('Tests'),
+    aiStageUsed: z.enum(['1. Development', '2. Code Review', '3. Tests']),
+    aiTool: z.literal('Other'),
+    aiToolOther: z.literal('Other'),
 })
 
 // ─── Tipos inferidos ──────────────────────────────────────────────────────────
