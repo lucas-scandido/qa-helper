@@ -3,7 +3,6 @@ import { BugStepIndicator } from './components/BugStepIndicator'
 import { BugStep1 } from './components/BugStep1'
 import { BugStep2 } from './components/BugStep2'
 import { BugStep3 } from './components/BugStep3'
-import { BugReviewModal } from './components/BugReviewModal'
 import styles from './BugCreation.module.css'
 
 export type BugData = {
@@ -45,7 +44,6 @@ function resolveStepIdentification(state: string): string {
 
 export function BugCreation() {
   const [currentStep, setCurrentStep] = useState(1)
-  const [showReviewModal, setShowReviewModal] = useState(false)
   const [workItem, setWorkItem] = useState<WorkItemResult | null>(null)
   const [bugData, setBugData] = useState<BugData>(initialBugData)
 
@@ -98,25 +96,25 @@ export function BugCreation() {
     }
   }
 
-  const handleConfirmReview = async (updatedData: Partial<BugData>): Promise<void> => {
+  const handleStep3Confirm = async (updated: {
+    title: string
+    description: string
+    expected: string
+    severity: string
+    stepIdentification: string
+  }): Promise<void> => {
     if (!workItem) return
-
-    const merged = { ...bugData, ...updatedData }
-    setBugData(merged)
-    setShowReviewModal(false)
-
-    const stepIdentification = resolveStepIdentification(workItem.state)
 
     await fetch('http://localhost:3000/api/bugs/create', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
         workItemId: workItem.id,
-        title: merged.generatedTitle,
-        description: merged.generatedDescription,
-        expectedResult: merged.generatedExpected,
-        severity: merged.generatedSeverity,
-        stepIdentification,
+        title: updated.title,
+        description: updated.description,
+        expectedResult: updated.expected,
+        severity: updated.severity,
+        stepIdentification: updated.stepIdentification,
         aiAccelerated: 'Yes',
         aiTypeOfAssistance: 'Tests',
         aiTool: 'Other',
@@ -164,20 +162,12 @@ export function BugCreation() {
           active={currentStep === 3}
           locked={currentStep < 3}
           bugData={bugData}
+          stepIdentification={workItem ? resolveStepIdentification(workItem.state) : ''}
           onCancel={() => setCurrentStep(2)}
           onRegenerate={handleRegenerate}
-          onConfirm={() => setShowReviewModal(true)}
+          onConfirm={handleStep3Confirm}
         />
       </div>
-
-      {showReviewModal && workItem && (
-        <BugReviewModal
-          bugData={bugData}
-          workItemState={workItem.state}
-          onCancel={() => setShowReviewModal(false)}
-          onConfirm={handleConfirmReview}
-        />
-      )}
     </div>
   )
 }
