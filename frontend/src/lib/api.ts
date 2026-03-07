@@ -27,4 +27,14 @@ export const api = {
         signal: AbortSignal.timeout(TIMEOUT_MS),
       })
     ),
+
+  put: (path: string, body: unknown): Promise<Response> =>
+    wrapFetch(
+      fetch(`${BASE}${path}`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(body),
+        signal: AbortSignal.timeout(TIMEOUT_MS),
+      })
+    ),
 }

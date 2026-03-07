@@ -1,5 +1,20 @@
 import type { Product } from '../products'
 
+// ─── Helpers ──────────────────────────────────────────────────────────────────
+
+function stripHtml(value: string | null): string | null {
+    if (!value) return null
+    return value
+        .replace(/<[^>]+>/g, ' ')   // remove tags
+        .replace(/&nbsp;/g, ' ')
+        .replace(/&amp;/g, '&')
+        .replace(/&lt;/g, '<')
+        .replace(/&gt;/g, '>')
+        .replace(/&quot;/g, '"')
+        .replace(/\s{2,}/g, ' ')    // colapsa espaços múltiplos
+        .trim() || null
+}
+
 // ─── System prompt ────────────────────────────────────────────────────────────
 
 export function buildSystemPrompt(): string {
@@ -11,7 +26,7 @@ REGRAS OBRIGATÓRIAS:
 - Responda APENAS em JSON válido, sem markdown, sem explicações fora do JSON
 - Não invente informações que não foram fornecidas
 - Responda em Português (pt-BR)
-- Utilize os fluxos e módulos do produto informado como contexto
+- Utilize os módulos do produto informado como contexto
 - Siga exatamente o contrato de resposta abaixo
 
 CONTRATO DE RESPOSTA:
@@ -27,24 +42,77 @@ CONTRATO DE RESPOSTA:
 
 // ─── User prompt ──────────────────────────────────────────────────────────────
 
+function buildWorkItemContext(params: {
+    workItemId: number
+    workItemType: string
+    workItemTitle: string
+    workItemState: string
+    workItemDescription: string | null
+    workItemObjective: string | null
+    workItemBusinessAC: string | null
+    workItemTechnicalAC: string | null
+    workItemAC: string | null
+    workItemDoD: string | null
+}): { section: string; isRich: boolean } {
+    const lines: string[] = [
+        `- ID: ${params.workItemId}`,
+        `- Tipo: ${params.workItemType}`,
+        `- Título: ${params.workItemTitle}`,
+        `- Estado: ${params.workItemState}`,
+    ]
+
+    const richFields: string[] = []
+
+    const description = stripHtml(params.workItemDescription)
+    const objective = stripHtml(params.workItemObjective)
+    const businessAC = stripHtml(params.workItemBusinessAC)
+    const technicalAC = stripHtml(params.workItemTechnicalAC)
+    const ac = stripHtml(params.workItemAC)
+    const dod = stripHtml(params.workItemDoD)
+
+    if (description) richFields.push(`- Descrição: ${description}`)
+    if (objective) richFields.push(`- Objetivo: ${objective}`)
+    if (businessAC) richFields.push(`- Critérios de Aceite (Negócio): ${businessAC}`)
+    if (technicalAC) richFields.push(`- Critérios de Aceite (Técnico): ${technicalAC}`)
+    if (ac) richFields.push(`- Critérios de Aceite: ${ac}`)
+    if (dod) richFields.push(`- Definição de Pronto: ${dod}`)
+
+    return {
+        section: [...lines, ...richFields].join('\n'),
+        isRich: richFields.length > 0,
+    }
+}
+
 export function buildUserPrompt(params: {
     workItemId: number
     workItemType: string
     workItemTitle: string
     workItemState: string
+    workItemDescription: string | null
+    workItemObjective: string | null
+    workItemBusinessAC: string | null
+    workItemTechnicalAC: string | null
+    workItemAC: string | null
+    workItemDoD: string | null
+    testEnvironment: string
     description: string
     product: Product
     productContext: string
 }): string {
+    const { section: workItemSection, isRich } = buildWorkItemContext(params)
+
+    const fallbackNote = !isRich
+        ? `\nOBSERVAÇÃO: O work item não possui descrição ou critérios de aceite preenchidos. Apoie-se no contexto do produto para inferir o comportamento esperado e construir os passos de reprodução.\n`
+        : ''
+
     return `
 CONTEXTO DO PRODUTO:
 ${params.productContext}
 
 WORK ITEM VINCULADO:
-- ID: ${params.workItemId}
-- Tipo: ${params.workItemType}
-- Título: ${params.workItemTitle}
-- Estado: ${params.workItemState}
+${workItemSection}
+${fallbackNote}
+AMBIENTE ONDE O BUG FOI IDENTIFICADO: ${params.testEnvironment}
 
 DESCRIÇÃO BREVE DO BUG (fornecida pelo analista):
 """

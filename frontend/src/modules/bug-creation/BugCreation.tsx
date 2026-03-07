@@ -5,6 +5,7 @@ import { BugStepIndicator } from './components/BugStepIndicator'
 import { BugStep1 } from './components/BugStep1'
 import { BugStep2 } from './components/BugStep2'
 import { BugStep3 } from './components/BugStep3'
+import { BugSuccessModal } from './components/BugSuccessModal'
 import styles from './BugCreation.module.css'
 
 const initialBugData: BugData = {
@@ -29,6 +30,7 @@ export function BugCreation() {
   const [submitting, setSubmitting] = useState(false)
   const [submitError, setSubmitError] = useState<string | null>(null)
   const [regenerateError, setRegenerateError] = useState<string | null>(null)
+  const [createdBug, setCreatedBug] = useState<{ id: number; url: string } | null>(null)
 
   const handleStep1Submit = (itemId: string, foundItem: WorkItemResult) => {
     setWorkItem(foundItem)
@@ -84,6 +86,9 @@ export function BugCreation() {
   }): Promise<void> => {
     if (!workItem || submitting) return
 
+    // Abre janela em branco sincronamente (contexto de clique) para o browser permitir o popup
+    const bugWindow = window.open('', '_blank', 'noopener,noreferrer')
+
     setSubmitting(true)
     setSubmitError(null)
 
@@ -100,14 +105,26 @@ export function BugCreation() {
       const json = await response.json()
       if (!response.ok || !json.success) throw new Error(json.error ?? 'Erro ao criar bug')
 
-      setCurrentStep(1)
-      setBugData(initialBugData)
-      setWorkItem(null)
+      if (bugWindow) bugWindow.location.href = json.data.url
+      setCreatedBug({ id: json.data.id, url: json.data.url })
     } catch (err) {
       setSubmitError(err instanceof Error ? err.message : 'Erro ao criar bug no Azure DevOps')
     } finally {
       setSubmitting(false)
     }
+  }
+
+  const handleSuccessLinkNewBug = () => {
+    setCreatedBug(null)
+    setBugData(prev => ({ ...initialBugData, itemId: prev.itemId }))
+    setCurrentStep(2)
+  }
+
+  const handleSuccessDismiss = () => {
+    setCreatedBug(null)
+    setCurrentStep(1)
+    setBugData(initialBugData)
+    setWorkItem(null)
   }
 
   return (
@@ -153,6 +170,15 @@ export function BugCreation() {
           onConfirm={handleStep3Confirm}
         />
       </div>
+
+      {createdBug && (
+        <BugSuccessModal
+          bugId={createdBug.id}
+          bugUrl={createdBug.url}
+          onLinkNewBug={handleSuccessLinkNewBug}
+          onDismiss={handleSuccessDismiss}
+        />
+      )}
     </div>
   )
 }

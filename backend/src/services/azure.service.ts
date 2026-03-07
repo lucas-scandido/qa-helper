@@ -13,6 +13,14 @@ export interface WorkItem {
         'System.AssignedTo'?: { displayName: string; uniqueName: string } | string
         'System.AreaPath': string
         'System.IterationPath': string
+        'System.Description'?: string
+        'Custom.Standard_Objective'?: string
+        'Custom.Standard_Details_Benefit'?: string
+        'Custom.Standard_Business_Acceptance_Criteria'?: string
+        'Custom.Standard_Technical_Acceptance_Criteria'?: string
+        'Microsoft.VSTS.Common.AcceptanceCriteria'?: string
+        'Custom.Standard_Definition_of_Done'?: string
+        'Custom.Standard_Other_Incident_Category'?: string
     }
 }
 
@@ -25,6 +33,14 @@ export interface WorkItemSummary {
     areaPath: string
     iterationPath: string
     url: string
+    description: string | null
+    objective: string | null
+    detailsBenefit: string | null
+    businessAcceptanceCriteria: string | null
+    technicalAcceptanceCriteria: string | null
+    acceptanceCriteria: string | null
+    definitionOfDone: string | null
+    incidentCategory: string | null
 }
 
 export interface CreateBugParams {
@@ -76,6 +92,14 @@ export async function getWorkItem(id: number): Promise<WorkItemSummary> {
             areaPath: data.fields['System.AreaPath'],
             iterationPath: data.fields['System.IterationPath'],
             url: data.url,
+            description: data.fields['System.Description'] ?? null,
+            objective: data.fields['Custom.Standard_Objective'] ?? null,
+            detailsBenefit: data.fields['Custom.Standard_Details_Benefit'] ?? null,
+            businessAcceptanceCriteria: data.fields['Custom.Standard_Business_Acceptance_Criteria'] ?? null,
+            technicalAcceptanceCriteria: data.fields['Custom.Standard_Technical_Acceptance_Criteria'] ?? null,
+            acceptanceCriteria: data.fields['Microsoft.VSTS.Common.AcceptanceCriteria'] ?? null,
+            definitionOfDone: data.fields['Custom.Standard_Definition_of_Done'] ?? null,
+            incidentCategory: data.fields['Custom.Standard_Other_Incident_Category'] ?? null,
         }
     } catch (error) {
         if (axios.isAxiosError(error)) {

@@ -1,8 +1,10 @@
 import { useState } from 'react'
 import { api } from '../../../lib/api'
-import type { WorkItemResult } from '../../../types'
+import type { WorkItemResult, ProductData } from '../../../types'
 import { Spinner } from '../../../components/ui/Spinner'
 import { ErrorBox } from '../../../components/ui/ErrorBox'
+import { ProductContextCard } from './ProductContextCard'
+import { ProductRegistrationForm } from './ProductRegistrationForm'
 import styles from './BugStep.module.css'
 
 interface BugStep1Props {
@@ -17,6 +19,7 @@ export function BugStep1({ active, completed, itemId: initialId, onSubmit }: Bug
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const [result, setResult] = useState<WorkItemResult | null>(null)
+  const [showForm, setShowForm] = useState(false)
 
   const handleSearch = async () => {
     const id = value.trim()
@@ -24,12 +27,14 @@ export function BugStep1({ active, completed, itemId: initialId, onSubmit }: Bug
     setLoading(true)
     setError(null)
     setResult(null)
+    setShowForm(false)
 
     try {
       const response = await api.get(`/api/bugs/search/${id}`)
       const json = await response.json()
       if (!response.ok || !json.success) throw new Error(json.error ?? 'Erro ao buscar item')
       setResult(json.data)
+      if (!json.data.hasProductContext) setShowForm(true)
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Erro ao buscar item')
     } finally {
@@ -45,7 +50,15 @@ export function BugStep1({ active, completed, itemId: initialId, onSubmit }: Bug
     setResult(null)
     setValue('')
     setError(null)
+    setShowForm(false)
   }
+
+  const handleProductSaved = (product: ProductData) => {
+    setResult(prev => prev ? { ...prev, hasProductContext: true, product } : prev)
+    setShowForm(false)
+  }
+
+  const activeProduct = result?.product ?? null
 
   return (
     <div className={`${styles.stepBlock} ${active ? styles.stepActive : ''}`}>
@@ -87,6 +100,26 @@ export function BugStep1({ active, completed, itemId: initialId, onSubmit }: Bug
 
             {result && (
               <>
+                {result.hasProductContext && activeProduct && !showForm && (
+                  <div style={{ marginBottom: 16 }}>
+                    <ProductContextCard
+                      product={activeProduct}
+                      onEdit={() => setShowForm(true)}
+                    />
+                  </div>
+                )}
+
+                {showForm && (
+                  <div style={{ marginBottom: 16 }}>
+                    <ProductRegistrationForm
+                      areaPath={result.areaPath}
+                      initialData={result.hasProductContext && activeProduct ? activeProduct : undefined}
+                      onSaved={handleProductSaved}
+                      onCancel={result.hasProductContext ? () => setShowForm(false) : handleCancel}
+                    />
+                  </div>
+                )}
+
                 <div className={styles.resultCard}>
                   <div className={styles.resultFoundHeader}>
                     <div className={styles.resultFoundIcon}>
@@ -101,8 +134,8 @@ export function BugStep1({ active, completed, itemId: initialId, onSubmit }: Bug
                     {[
                       { key: 'ID:', value: String(result.id) },
                       { key: 'Tipo:', value: result.type },
+                      { key: 'State:', value: result.state },
                       { key: 'Título:', value: result.title },
-                      { key: 'Status:', value: result.state },
                       { key: 'Responsável:', value: result.assignedTo },
                     ].map(row => (
                       <div key={row.key} className={styles.resultRow}>
@@ -113,10 +146,18 @@ export function BugStep1({ active, completed, itemId: initialId, onSubmit }: Bug
                   </div>
                 </div>
 
-                <div className={styles.actionRow}>
-                  <button className={styles.btnGhost} onClick={handleCancel}>Cancelar</button>
-                  <button className={styles.btnPrimary} onClick={handleNext}>Próximo</button>
-                </div>
+                {!showForm && (
+                  <div className={styles.actionRow}>
+                    <button className={styles.btnGhost} onClick={handleCancel}>Cancelar</button>
+                    <button
+                      className={styles.btnPrimary}
+                      onClick={handleNext}
+                      disabled={!result.hasProductContext}
+                    >
+                      Próximo
+                    </button>
+                  </div>
+                )}
               </>
             )}
           </>

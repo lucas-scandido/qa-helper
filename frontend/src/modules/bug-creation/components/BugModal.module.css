@@ -347,3 +347,163 @@
 .btnDanger:hover {
   background: var(--accent-hover);
 }
+
+/* ── Success Modal ─────────────────────────────── */
+
+.successModal {
+  background: var(--bg-surface);
+  border: 1px solid var(--border-default);
+  border-radius: var(--radius-lg);
+  width: 100%;
+  max-width: 400px;
+  box-shadow: var(--shadow-lg);
+  animation: slideUp 0.2s cubic-bezier(0.4, 0, 0.2, 1) both;
+  overflow: hidden;
+}
+
+.successHeader {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 20px 24px;
+  border-bottom: 1px solid var(--border-subtle);
+}
+
+.successHeaderIcon {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: var(--bg-base);
+  border: 1px solid var(--border-default);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.successHeaderLabel {
+  font-family: 'IBM Plex Sans', sans-serif;
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--text-primary);
+  letter-spacing: -0.01em;
+  margin-bottom: 2px;
+}
+
+.successHeaderSub {
+  font-size: 12px;
+  color: var(--text-secondary);
+  font-family: 'IBM Plex Sans', sans-serif;
+}
+
+.successBody {
+  padding: 20px 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.successLinkBtn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
+  height: 36px;
+  padding: 0 14px;
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--border-default);
+  background: var(--bg-base);
+  color: var(--text-secondary);
+  font-size: 13px;
+  font-weight: 500;
+  font-family: 'IBM Plex Sans', sans-serif;
+  text-decoration: none;
+  transition: border-color var(--transition-fast), color var(--transition-fast);
+}
+
+.successLinkBtn:hover {
+  border-color: var(--border-strong);
+  color: var(--text-primary);
+}
+
+.successDivider {
+  height: 1px;
+  background: var(--border-subtle);
+}
+
+.successQuestion {
+  font-size: 13px;
+  color: var(--text-secondary);
+  font-family: 'IBM Plex Sans', sans-serif;
+  line-height: 1.5;
+}
+
+.successFooter {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.successCountdownRow {
+  display: flex;
+  align-items: center;
+}
+
+.successProgressTrack {
+  flex: 1;
+  height: 3px;
+  border-radius: 99px;
+  background: var(--border-subtle);
+  overflow: hidden;
+}
+
+.successProgressBar {
+  height: 100%;
+  border-radius: 99px;
+  background: var(--accent);
+  transition: width 1s linear;
+}
+
+.successCountdownText {
+  font-size: 11px;
+  color: var(--text-muted);
+  font-family: 'IBM Plex Sans', sans-serif;
+  margin-top: 6px;
+}
+
+.btnSuccess {
+  width: 100%;
+  height: 38px;
+  border-radius: var(--radius-sm);
+  background: var(--accent);
+  color: #fff;
+  font-size: 13px;
+  font-weight: 600;
+  font-family: 'IBM Plex Sans', sans-serif;
+  border: none;
+  cursor: pointer;
+  transition: background var(--transition-fast);
+}
+
+.btnSuccess:hover {
+  background: var(--accent-hover);
+}
+
+.btnSuccessGhost {
+  width: 100%;
+  height: 38px;
+  border-radius: var(--radius-sm);
+  background: transparent;
+  color: var(--text-muted);
+  font-size: 13px;
+  font-weight: 500;
+  font-family: 'IBM Plex Sans', sans-serif;
+  border: 1px solid var(--border-default);
+  cursor: pointer;
+  transition: color var(--transition-fast), border-color var(--transition-fast);
+}
+
+.btnSuccessGhost:hover {
+  color: var(--text-primary);
+  border-color: var(--border-strong);
+}
