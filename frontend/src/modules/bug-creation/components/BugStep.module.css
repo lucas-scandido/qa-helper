@@ -404,21 +404,6 @@
   gap: 10px;
 }
 
-/* ─── Error box ───────────────────────────────────────────────────────────── */
-.errorBox {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  margin-top: 12px;
-  padding: 10px 14px;
-  border-radius: var(--radius-sm);
-  background: rgba(248, 113, 113, 0.08);
-  border: 1px solid rgba(248, 113, 113, 0.25);
-  color: #F87171;
-  font-size: 13px;
-  font-family: 'IBM Plex Sans', sans-serif;
-}
-
 /* ─── Spinner ─────────────────────────────────────────────────────────────── */
 @keyframes spin {
   to {

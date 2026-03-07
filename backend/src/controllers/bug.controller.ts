@@ -4,7 +4,6 @@ import { generateBugWithAI, formatGeneratedBug } from '../services/ai.service'
 import { buildSystemPrompt, buildUserPrompt } from '../prompts/bug.prompt'
 import { identifyProductByAreaPath, buildProductContext } from '../products'
 import type { GenerateBugInput, CreateBugInput } from '../schemas/bug.schema'
-import { env } from '../config/env'
 
 // ─── Helpers de mapeamento por estado ────────────────────────────────────────
 
@@ -38,8 +37,7 @@ export async function generateBug(input: GenerateBugInput, reply: FastifyReply) 
 
     const productContext = buildProductContext(product)
 
-    console.log(`🧭 Produto identificado: ${product.nome}`)
-    console.log(`📍 Area Path: ${workItem.areaPath}`)
+    reply.log.info({ product: product.nome, areaPath: workItem.areaPath }, 'Produto identificado')
 
     const systemPrompt = buildSystemPrompt()
     const userPrompt = buildUserPrompt({
@@ -52,7 +50,7 @@ export async function generateBug(input: GenerateBugInput, reply: FastifyReply) 
         productContext,
     })
 
-    const generated = await generateBugWithAI(systemPrompt, userPrompt)
+    const generated = await generateBugWithAI(systemPrompt, userPrompt, reply.log)
     const formatted = formatGeneratedBug(generated)
 
     return reply.send({ success: true, product: product.nome, data: formatted })
@@ -67,7 +65,7 @@ export async function createBugHandler(input: CreateBugInput, reply: FastifyRepl
 
     const parentItem = {
         id: workItemSummary.id,
-        url: `https://dev.azure.com/${env.AZURE_ORGANIZATION}/${env.AZURE_PROJECT}/_apis/wit/workitems/${workItemSummary.id}`,
+        url: workItemSummary.url,
         fields: {
             'System.Title': workItemSummary.title,
             'System.WorkItemType': workItemSummary.type,

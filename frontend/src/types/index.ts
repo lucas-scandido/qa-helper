@@ -12,7 +12,6 @@ export type BugData = {
   description: string
   generatedTitle: string
   generatedDescription: string
-  generatedSteps: string
   generatedExpected: string
   generatedSeverity: string
 }

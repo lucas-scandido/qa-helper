@@ -1,4 +1,6 @@
 import axios from 'axios'
+import { ZodError } from 'zod'
+import type { FastifyBaseLogger } from 'fastify'
 import { env } from '../config/env'
 import { generatedBugSchema, type GeneratedBug } from '../schemas/bug.schema'
 
@@ -7,6 +9,17 @@ import { generatedBugSchema, type GeneratedBug } from '../schemas/bug.schema'
 const MAX_RETRIES = 3
 const BACKOFF_MS = 2000
 const TIMEOUT_MS = 60000
+
+/** Erros determinísticos não se beneficiam de retry (ex: resposta inválida do modelo) */
+function isTransientError(error: unknown): boolean {
+  if (error instanceof ZodError) return false
+  if (error instanceof SyntaxError) return false // JSON.parse failure
+  if (axios.isAxiosError(error)) {
+    const status = error.response?.status
+    if (status && status < 500) return false // 4xx: client errors
+  }
+  return true
+}
 
 // ─── Cliente HTTP para o LLM Gateway ─────────────────────────────────────────
 
@@ -24,13 +37,14 @@ const gatewayClient = axios.create({
 
 export async function generateBugWithAI(
   systemPrompt: string,
-  userPrompt: string
+  userPrompt: string,
+  log: FastifyBaseLogger
 ): Promise<GeneratedBug> {
   let lastError: Error | undefined
 
   for (let attempt = 1; attempt <= MAX_RETRIES; attempt++) {
     try {
-      console.log(`🤖 Tentativa ${attempt}/${MAX_RETRIES} — chamando LLM Gateway...`)
+      log.info({ attempt, maxRetries: MAX_RETRIES }, 'Chamando LLM Gateway')
 
       const { data } = await gatewayClient.post('/v1/messages', {
         model: env.ANTHROPIC_MODEL,
@@ -52,16 +66,20 @@ export async function generateBugWithAI(
 
       const validated = generatedBugSchema.parse(parsed)
 
-      console.log('✅ Bug gerado e validado com sucesso')
+      log.info('Bug gerado e validado com sucesso')
       return validated
 
     } catch (error) {
       lastError = error instanceof Error ? error : new Error(String(error))
-      console.warn(`⚠️  Tentativa ${attempt} falhou: ${lastError.message}`)
+      log.warn({ attempt, error: lastError.message }, 'Tentativa falhou')
+
+      if (!isTransientError(error)) {
+        throw lastError
+      }
 
       if (attempt < MAX_RETRIES) {
         const wait = BACKOFF_MS * attempt
-        console.log(`⏳ Aguardando ${wait / 1000}s antes da próxima tentativa...`)
+        log.info({ waitMs: wait }, 'Aguardando antes da próxima tentativa')
         await new Promise(resolve => setTimeout(resolve, wait))
       }
     }

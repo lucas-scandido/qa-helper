@@ -12,7 +12,6 @@ const initialBugData: BugData = {
   description: '',
   generatedTitle: '',
   generatedDescription: '',
-  generatedSteps: '',
   generatedExpected: '',
   generatedSeverity: '',
 }
@@ -20,7 +19,7 @@ const initialBugData: BugData = {
 const STATE_OVERRIDES: Record<string, string> = { Validation: 'In Production' }
 
 function resolveStepIdentification(state: string): string {
-  return STATE_OVERRIDES[state] ?? state ?? 'Development'
+  return STATE_OVERRIDES[state] ?? state
 }
 
 export function BugCreation() {
@@ -46,7 +45,6 @@ export function BugCreation() {
       description,
       generatedTitle: generated.title,
       generatedDescription: generated.description,
-      generatedSteps: '',
       generatedExpected: generated.expectedResult,
       generatedSeverity: generated.severity,
     }))
@@ -136,7 +134,6 @@ export function BugCreation() {
         <BugStep2
           active={currentStep === 2}
           completed={currentStep > 2}
-          locked={currentStep < 2}
           description={bugData.description}
           workItem={workItem}
           onSubmit={handleStep2Submit}

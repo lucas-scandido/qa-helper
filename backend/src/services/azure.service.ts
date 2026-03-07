@@ -91,10 +91,22 @@ export async function getWorkItem(id: number): Promise<WorkItemSummary> {
     }
 }
 
+// ─── Sanitização HTML ─────────────────────────────────────────────────────────
+
+function escapeHtml(text: string): string {
+    return text
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#39;')
+}
+
 // ─── Criar bug vinculado ao item pai ─────────────────────────────────────────
 
 export async function createBug(params: CreateBugParams, parentItem: WorkItem): Promise<{ id: number; url: string }> {
-    const descriptionHtml = params.description.replace(/\n/g, '<br>')
+    // Escapa HTML especial antes de converter quebras de linha em <br>
+    const descriptionHtml = escapeHtml(params.description).replace(/\n/g, '<br>')
 
     const payload = [
         { op: 'add', path: '/fields/System.Title', value: params.title },

@@ -1,4 +1,4 @@
-import styles from '../../modules/bug-creation/components/BugStep.module.css'
+import styles from './ErrorBox.module.css'
 
 interface ErrorBoxProps {
   message: string

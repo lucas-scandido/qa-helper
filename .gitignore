@@ -14,4 +14,3 @@ backend/dist/
 # Misc
 .DS_Store
 *.local
-.claude/

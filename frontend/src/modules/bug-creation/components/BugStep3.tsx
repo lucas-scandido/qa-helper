@@ -78,8 +78,11 @@ export function BugStep3({ active, locked, bugData, stepIdentification, submitti
 
   const handleRegenerate = async () => {
     setRegenerating(true)
-    await onRegenerate()
-    setRegenerating(false)
+    try {
+      await onRegenerate()
+    } finally {
+      setRegenerating(false)
+    }
   }
 
   const isValid = title.trim() && description.trim() && expected.trim() && severity && stepIdentification

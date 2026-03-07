@@ -1,3 +1,4 @@
+import { useEffect } from 'react'
 import { createPortal } from 'react-dom'
 import styles from './BugModal.module.css'
 
@@ -7,6 +8,12 @@ interface BugConfirmationModalProps {
 }
 
 export function BugConfirmationModal({ onCancel, onConfirm }: BugConfirmationModalProps) {
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => { if (e.key === 'Escape') onCancel() }
+    document.addEventListener('keydown', handleKeyDown)
+    return () => document.removeEventListener('keydown', handleKeyDown)
+  }, [onCancel])
+
   return createPortal(
     <div className={styles.confirmOverlay} onClick={onCancel}>
       <div className={styles.confirmModal} onClick={e => e.stopPropagation()}>

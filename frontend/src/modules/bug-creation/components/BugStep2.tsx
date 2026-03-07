@@ -10,7 +10,6 @@ const MAX_DESCRIPTION_LENGTH = 500
 interface BugStep2Props {
   active: boolean
   completed: boolean
-  locked: boolean
   description: string
   workItem: WorkItemResult | null
   onSubmit: (description: string, generated: { title: string; description: string; expectedResult: string; severity: string }) => void
