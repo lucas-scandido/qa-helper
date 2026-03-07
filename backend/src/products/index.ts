@@ -1,5 +1,4 @@
 import asmob from './asmob.json'
-import cora from './cora.json'
 
 // ─── Tipos ───────────────────────────────────────────────────────────────────
 
@@ -41,7 +40,6 @@ function adaptLegacyProduct(legacy: LegacyProduct): Product {
 
 const products: Record<string, Product> = {
     asmob: adaptLegacyProduct(asmob as LegacyProduct),
-    cora: adaptLegacyProduct(cora as LegacyProduct),
 }
 
 // ─── Registrar produto em runtime ────────────────────────────────────────────
