@@ -1,12 +1,11 @@
 import { useState } from 'react'
+import { api } from '../../../lib/api'
+import type { WorkItemResult } from '../../../types'
+import { Spinner } from '../../../components/ui/Spinner'
+import { ErrorBox } from '../../../components/ui/ErrorBox'
 import styles from './BugStep.module.css'
 
-interface WorkItemResult {
-  id: number
-  title: string
-  type: string
-  assignedTo: string
-}
+const MAX_DESCRIPTION_LENGTH = 500
 
 interface BugStep2Props {
   active: boolean
@@ -30,13 +29,9 @@ export function BugStep2({ active, completed, description: initialDesc, workItem
     setError(null)
 
     try {
-      const response = await fetch('http://localhost:3000/api/bugs/generate', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          description: value.trim(),
-          workItemId: workItem.id,
-        }),
+      const response = await api.post('/api/bugs/generate', {
+        description: value.trim(),
+        workItemId: workItem.id,
       })
 
       const json = await response.json()
@@ -49,6 +44,9 @@ export function BugStep2({ active, completed, description: initialDesc, workItem
       setLoading(false)
     }
   }
+
+  const isNearLimit = value.length > 450
+  const isAtLimit = value.length >= MAX_DESCRIPTION_LENGTH
 
   return (
     <div className={`${styles.stepBlock} ${active ? styles.stepActive : ''}`}>
@@ -74,37 +72,30 @@ export function BugStep2({ active, completed, description: initialDesc, workItem
                 className={styles.textarea}
                 placeholder="Ex: Ao clicar em salvar, o sistema retorna erro 500 sem mensagem ao usuário."
                 value={value}
-                onChange={e => setValue(e.target.value)}
+                onChange={e => setValue(e.target.value.slice(0, MAX_DESCRIPTION_LENGTH))}
                 rows={4}
                 disabled={loading}
+                maxLength={MAX_DESCRIPTION_LENGTH}
               />
-              <span className={styles.charCount}>{value.length}/500</span>
+              <span
+                className={styles.charCount}
+                style={isAtLimit ? { color: 'var(--status-danger)' } : isNearLimit ? { color: 'var(--status-warning)' } : undefined}
+              >
+                {value.length}/{MAX_DESCRIPTION_LENGTH}
+              </span>
             </div>
 
-            {error && (
-              <div className={styles.errorBox}>
-                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                  <circle cx="12" cy="12" r="10" /><line x1="12" y1="8" x2="12" y2="12" /><line x1="12" y1="16" x2="12.01" y2="16" />
-                </svg>
-                {error}
-              </div>
-            )}
+            {error && <ErrorBox message={error} />}
 
             <div className={styles.actionRow}>
               <button className={styles.btnGhost} onClick={onCancel}>Cancelar</button>
               <button className={styles.btnPrimary} onClick={handleConfirm} disabled={value.trim().length < 20 || loading}>
                 {loading ? (
                   <>
-                    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={styles.spinning}>
-                      <path d="M21 12a9 9 0 1 1-6.219-8.56" />
-                    </svg>
+                    <Spinner size={15} />
                     Gerando...
                   </>
-                ) : (
-                  <>
-                    Confirmar e Gerar
-                  </>
-                )}
+                ) : 'Confirmar e Gerar'}
               </button>
             </div>
           </>

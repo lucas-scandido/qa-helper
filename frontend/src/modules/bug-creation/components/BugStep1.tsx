@@ -1,14 +1,9 @@
 import { useState } from 'react'
+import { api } from '../../../lib/api'
+import type { WorkItemResult } from '../../../types'
+import { Spinner } from '../../../components/ui/Spinner'
+import { ErrorBox } from '../../../components/ui/ErrorBox'
 import styles from './BugStep.module.css'
-
-interface WorkItemResult {
-  id: number
-  title: string
-  type: string
-  state: string
-  assignedTo: string
-  areaPath: string
-}
 
 interface BugStep1Props {
   active: boolean
@@ -31,7 +26,7 @@ export function BugStep1({ active, completed, itemId: initialId, onSubmit }: Bug
     setResult(null)
 
     try {
-      const response = await fetch(`http://localhost:3000/api/bugs/search/${id}`)
+      const response = await api.get(`/api/bugs/search/${id}`)
       const json = await response.json()
       if (!response.ok || !json.success) throw new Error(json.error ?? 'Erro ao buscar item')
       setResult(json.data)
@@ -83,29 +78,16 @@ export function BugStep1({ active, completed, itemId: initialId, onSubmit }: Bug
                   disabled={loading}
                 />
                 <button className={styles.btnPrimary} onClick={handleSearch} disabled={!value.trim() || loading}>
-                  {loading ? (
-                    <svg className={styles.spinning} width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-                      <path d="M21 12a9 9 0 1 1-6.219-8.56" />
-                    </svg>
-                  ) : 'Buscar'}
+                  {loading ? <Spinner strokeWidth={2.5} /> : 'Buscar'}
                 </button>
               </div>
             </div>
 
-            {error && (
-              <div className={styles.errorBox}>
-                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                  <circle cx="12" cy="12" r="10" /><line x1="12" y1="8" x2="12" y2="12" /><line x1="12" y1="16" x2="12.01" y2="16" />
-                </svg>
-                {error}
-              </div>
-            )}
+            {error && <ErrorBox message={error} />}
 
             {result && (
               <>
-                {/* ─── Result card — sem botões internos ─── */}
                 <div className={styles.resultCard}>
-                  {/* Header */}
                   <div className={styles.resultFoundHeader}>
                     <div className={styles.resultFoundIcon}>
                       <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
@@ -115,7 +97,6 @@ export function BugStep1({ active, completed, itemId: initialId, onSubmit }: Bug
                     <span className={styles.resultFoundLabel}>Item Encontrado</span>
                   </div>
 
-                  {/* Table */}
                   <div className={styles.resultTable}>
                     {[
                       { key: 'ID:', value: String(result.id) },
@@ -132,14 +113,9 @@ export function BugStep1({ active, completed, itemId: initialId, onSubmit }: Bug
                   </div>
                 </div>
 
-                {/* ─── Botões fora do card ─── */}
                 <div className={styles.actionRow}>
-                  <button className={styles.btnGhost} onClick={handleCancel}>
-                    Cancelar
-                  </button>
-                  <button className={styles.btnPrimary} onClick={handleNext}>
-                    Próximo
-                  </button>
+                  <button className={styles.btnGhost} onClick={handleCancel}>Cancelar</button>
+                  <button className={styles.btnPrimary} onClick={handleNext}>Próximo</button>
                 </div>
               </>
             )}

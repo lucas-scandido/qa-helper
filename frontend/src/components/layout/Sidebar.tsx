@@ -1,11 +1,13 @@
-import { useNavigate, useLocation } from 'react-router-dom'
+import { NavLink } from 'react-router-dom'
 import { useTheme } from '../../hooks/useTheme'
+import { BugIcon } from '../ui/BugIcon'
 import styles from './Sidebar.module.css'
 
 const navItems = [
   {
     label: 'Início',
     path: '/',
+    end: true,
     icon: (
       <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
         <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z" />
@@ -16,55 +18,37 @@ const navItems = [
   {
     label: 'Criar Bugs',
     path: '/criar-bugs',
-    icon: (
-      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
-        <path d="M19 15V11.9375C19 9.76288 17.2371 8 15.0625 8H8.9375C6.76288 8 5 9.76288 5 11.9375V15C5 18.866 8.13401 22 12 22C15.866 22 19 18.866 19 15Z"/>
-        <path d="M16.5 8.5V7.5C16.5 5.01472 14.4853 3 12 3C9.51472 3 7.5 5.01472 7.5 7.5V8.5"/>
-        <path d="M19 14H22"/>
-        <path d="M5 14H2"/>
-        <path d="M14.5 3.5L17 2"/>
-        <path d="M9.5 3.5L7 2"/>
-        <path d="M20.5 20.0002L18.5 19.2002"/>
-        <path d="M20.5 7.9998L18.5 8.7998"/>
-        <path d="M3.5 20.0002L5.5 19.2002"/>
-        <path d="M3.5 7.9998L5.5 8.7998"/>
-        <path d="M12 21.5V15"/>
-      </svg>
-    ),
-  }
+    end: false,
+    icon: <BugIcon size={20} />,
+  },
 ]
 
 export function Sidebar() {
   const { theme, toggleTheme } = useTheme()
-  const navigate = useNavigate()
-  const location = useLocation()
 
   return (
     <aside className={styles.sidebar}>
       {/* Nav */}
       <nav className={styles.nav}>
-        {navItems.map(item => {
-          const isActive = item.path === '/'
-            ? location.pathname === '/'
-            : location.pathname.startsWith(item.path)
-
-          return (
-            <button
-              key={item.label}
-              className={`${styles.navItem} ${isActive ? styles.navItemActive : ''}`}
-              onClick={() => navigate(item.path)}
-            >
-              {item.icon}
-              <span className={styles.navLabel}>{item.label}</span>
-            </button>
-          )
-        })}
+        {navItems.map(item => (
+          <NavLink
+            key={item.label}
+            to={item.path}
+            end={item.end}
+            className={({ isActive }) =>
+              `${styles.navItem} ${isActive ? styles.navItemActive : ''}`
+            }
+          >
+            {item.icon}
+            <span className={styles.navLabel}>{item.label}</span>
+          </NavLink>
+        ))}
       </nav>
 
       <div className={styles.spacer} />
 
       {/* Theme toggle */}
-      <button className={styles.themeToggle} onClick={toggleTheme} title="Alternar tema">
+      <button className={styles.themeToggle} onClick={toggleTheme} title="Alternar tema" aria-label="Alternar tema">
         {theme === 'dark' ? (
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
             <circle cx="12" cy="12" r="5" />

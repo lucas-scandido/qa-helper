@@ -4,7 +4,12 @@ import { env } from './config/env'
 import { bugRoutes } from './routes/bug.routes'
 
 async function start() {
-  const app = Fastify({ logger: false })
+  const app = Fastify({
+    logger: {
+      level: 'info',
+      transport: { target: 'pino-pretty' },
+    },
+  })
 
   // ─── CORS ───────────────────────────────────────────────────────────────────
   await app.register(cors, {
@@ -19,9 +24,6 @@ async function start() {
       error: error.message ?? 'Erro interno do servidor',
     })
   })
-
-  // ─── Rota teste ─────────────────────────────────────────────────────────────
-  app.get('/test', async () => ({ ok: true }))
 
   // ─── Rotas ──────────────────────────────────────────────────────────────────
   await app.register(bugRoutes, { prefix: '/api/bugs' })

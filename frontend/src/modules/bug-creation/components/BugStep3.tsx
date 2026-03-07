@@ -1,6 +1,8 @@
 import { useState, useEffect } from 'react'
-import type { BugData } from '../BugCreation'
+import type { BugData } from '../../../types'
 import { BugConfirmationModal } from './BugConfirmationModal'
+import { Spinner } from '../../../components/ui/Spinner'
+import { ErrorBox } from '../../../components/ui/ErrorBox'
 import styles from './BugStep.module.css'
 
 const severities = [
@@ -18,17 +20,48 @@ const stepIdentifications = [
   { value: 'In Production',    label: 'In Production' },
 ]
 
+// Estilos estáticos fora do componente — evita recriar objetos a cada render
+const lockedChipBase: React.CSSProperties = {
+  display: 'inline-flex',
+  alignItems: 'center',
+  gap: 7,
+  height: 34,
+  padding: '0 14px',
+  borderRadius: 'var(--radius-full)',
+  border: '1px solid var(--border-subtle)',
+  background: 'var(--bg-elevated)',
+  color: 'var(--text-muted)',
+  fontSize: 13,
+  fontWeight: 500,
+  fontFamily: "'IBM Plex Sans', sans-serif",
+  cursor: 'not-allowed',
+  pointerEvents: 'none',
+  userSelect: 'none',
+  opacity: 0.45,
+}
+
+const lockedChipSelected: React.CSSProperties = {
+  ...lockedChipBase,
+  opacity: 1,
+  background: 'color-mix(in srgb, #6B7280 12%, transparent)',
+  borderColor: '#6B7280',
+  color: '#9CA3AF',
+}
+
 interface BugStep3Props {
   active: boolean
   locked: boolean
   bugData: BugData
   stepIdentification: string
+  submitting: boolean
+  submitError: string | null
+  regenerateError: string | null
   onCancel: () => void
   onRegenerate: () => Promise<void>
   onConfirm: (updated: { title: string; description: string; expected: string; severity: string; stepIdentification: string }) => void
 }
 
-export function BugStep3({ active, locked, bugData, stepIdentification, onCancel, onRegenerate, onConfirm }: BugStep3Props) {
+export function BugStep3({ active, locked, bugData, stepIdentification, submitting, submitError, regenerateError, onCancel, onRegenerate, onConfirm }: BugStep3Props) {
   const [regenerating, setRegenerating] = useState(false)
   const [showConfirm, setShowConfirm] = useState(false)
   const [title, setTitle] = useState(bugData.generatedTitle)
@@ -50,33 +83,6 @@ export function BugStep3({ active, locked, bugData, stepIdentification, onCancel
   }
 
   const isValid = title.trim() && description.trim() && expected.trim() && severity && stepIdentification
-
-  const lockedChipBase: React.CSSProperties = {
-    display: 'inline-flex',
-    alignItems: 'center',
-    gap: 7,
-    height: 34,
-    padding: '0 14px',
-    borderRadius: 'var(--radius-full)',
-    border: '1px solid var(--border-subtle)',
-    background: 'var(--bg-elevated)',
-    color: 'var(--text-muted)',
-    fontSize: 13,
-    fontWeight: 500,
-    fontFamily: "'IBM Plex Sans', sans-serif",
-    cursor: 'not-allowed',
-    pointerEvents: 'none',
-    userSelect: 'none',
-    opacity: 0.45,
-  }
-
-  const lockedChipSelected: React.CSSProperties = {
-    ...lockedChipBase,
-    opacity: 1,
-    background: 'color-mix(in srgb, #6B7280 12%, transparent)',
-    borderColor: '#6B7280',
-    color: '#9CA3AF',
-  }
 
   return (
     <>
@@ -101,6 +107,7 @@ export function BugStep3({ active, locked, bugData, stepIdentification, onCancel
                     style={{ width: '100%' }}
                     value={title}
                     onChange={e => setTitle(e.target.value)}
+                    disabled={submitting}
                   />
                 </div>
 
@@ -112,6 +119,7 @@ export function BugStep3({ active, locked, bugData, stepIdentification, onCancel
                     value={description}
                     onChange={e => setDescription(e.target.value)}
                     rows={5}
+                    disabled={submitting}
                   />
                 </div>
 
@@ -123,6 +131,7 @@ export function BugStep3({ active, locked, bugData, stepIdentification, onCancel
                     value={expected}
                     onChange={e => setExpected(e.target.value)}
                     rows={3}
+                    disabled={submitting}
                   />
                 </div>
 
@@ -167,14 +176,15 @@ export function BugStep3({ active, locked, bugData, stepIdentification, onCancel
 
               </div>
 
+              {regenerateError && <ErrorBox message={regenerateError} />}
+              {submitError && <ErrorBox message={submitError} />}
+
               <div className={styles.actionRow}>
-                <button className={styles.btnGhost} onClick={onCancel}>Cancelar</button>
+                <button className={styles.btnGhost} onClick={onCancel} disabled={submitting}>Cancelar</button>
                 <div className={styles.actionRowRight}>
-                  <button className={styles.btnSecondary} onClick={handleRegenerate} disabled={regenerating}>
+                  <button className={styles.btnSecondary} onClick={handleRegenerate} disabled={regenerating || submitting}>
                     {regenerating ? (
-                      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={styles.spinning}>
-                        <path d="M21 12a9 9 0 1 1-6.219-8.56"/>
-                      </svg>
+                      <Spinner />
                     ) : (
                       <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                         <path d="M3 12a9 9 0 0 1 9-9 9.75 9.75 0 0 1 6.74 2.74L21 8"/>
@@ -188,9 +198,14 @@ export function BugStep3({ active, locked, bugData, stepIdentification, onCancel
                   <button
                     className={styles.btnPrimary}
                     onClick={() => setShowConfirm(true)}
-                    disabled={!isValid}
+                    disabled={!isValid || submitting}
                   >
-                    Criar Bug
+                    {submitting ? (
+                      <>
+                        <Spinner />
+                        Criando...
+                      </>
+                    ) : 'Criar Bug'}
                   </button>
                 </div>
               </div>

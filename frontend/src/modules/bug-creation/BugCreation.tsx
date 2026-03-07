@@ -1,28 +1,11 @@
 import { useState } from 'react'
+import { api } from '../../lib/api'
+import type { WorkItemResult, BugData } from '../../types'
 import { BugStepIndicator } from './components/BugStepIndicator'
 import { BugStep1 } from './components/BugStep1'
 import { BugStep2 } from './components/BugStep2'
 import { BugStep3 } from './components/BugStep3'
 import styles from './BugCreation.module.css'
-
-export type BugData = {
-  itemId: string
-  description: string
-  generatedTitle: string
-  generatedDescription: string
-  generatedSteps: string
-  generatedExpected: string
-  generatedSeverity: string
-}
-
-interface WorkItemResult {
-  id: number
-  title: string
-  type: string
-  state: string
-  assignedTo: string
-  areaPath: string
-}
 
 const initialBugData: BugData = {
   itemId: '',
@@ -34,18 +17,19 @@ const initialBugData: BugData = {
   generatedSeverity: '',
 }
 
+const STATE_OVERRIDES: Record<string, string> = { Validation: 'In Production' }
+
 function resolveStepIdentification(state: string): string {
-  if (state === 'Quality Analysis') return 'Quality Analysis'
-  if (state === 'Review') return 'Review'
-  if (state === 'Deployment') return 'Deployment'
-  if (state === 'Validation') return 'In Production'
-  return 'Development'
+  return STATE_OVERRIDES[state] ?? state ?? 'Development'
 }
 
 export function BugCreation() {
   const [currentStep, setCurrentStep] = useState(1)
   const [workItem, setWorkItem] = useState<WorkItemResult | null>(null)
   const [bugData, setBugData] = useState<BugData>(initialBugData)
+  const [submitting, setSubmitting] = useState(false)
+  const [submitError, setSubmitError] = useState<string | null>(null)
+  const [regenerateError, setRegenerateError] = useState<string | null>(null)
 
   const handleStep1Submit = (itemId: string, foundItem: WorkItemResult) => {
     setWorkItem(foundItem)
@@ -72,17 +56,14 @@ export function BugCreation() {
   const handleRegenerate = async (): Promise<void> => {
     if (!workItem || !bugData.description) return
 
+    setRegenerateError(null)
     try {
-      const response = await fetch('http://localhost:3000/api/bugs/generate', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          description: bugData.description,
-          workItemId: workItem.id,
-        }),
+      const response = await api.post('/api/bugs/generate', {
+        description: bugData.description,
+        workItemId: workItem.id,
       })
       const json = await response.json()
-      if (!response.ok || !json.success) return
+      if (!response.ok || !json.success) throw new Error(json.error ?? 'Erro ao regenerar bug')
 
       setBugData(prev => ({
         ...prev,
@@ -91,8 +72,8 @@ export function BugCreation() {
         generatedExpected: json.data.expectedResult,
         generatedSeverity: json.data.severity,
       }))
-    } catch {
-      // silently fail — user can try again
+    } catch (err) {
+      setRegenerateError(err instanceof Error ? err.message : 'Erro ao regenerar descrição')
     }
   }
 
@@ -103,28 +84,32 @@ export function BugCreation() {
     severity: string
     stepIdentification: string
   }): Promise<void> => {
-    if (!workItem) return
+    if (!workItem || submitting) return
 
-    await fetch('http://localhost:3000/api/bugs/create', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
+    setSubmitting(true)
+    setSubmitError(null)
+
+    try {
+      const response = await api.post('/api/bugs/create', {
         workItemId: workItem.id,
         title: updated.title,
         description: updated.description,
         expectedResult: updated.expected,
         severity: updated.severity,
         stepIdentification: updated.stepIdentification,
-        aiAccelerated: 'Yes',
-        aiTypeOfAssistance: 'Tests',
-        aiTool: 'Other',
-        aiToolOther: 'Other',
-      }),
-    })
+      })
 
-    setCurrentStep(1)
-    setBugData(initialBugData)
-    setWorkItem(null)
+      const json = await response.json()
+      if (!response.ok || !json.success) throw new Error(json.error ?? 'Erro ao criar bug')
+
+      setCurrentStep(1)
+      setBugData(initialBugData)
+      setWorkItem(null)
+    } catch (err) {
+      setSubmitError(err instanceof Error ? err.message : 'Erro ao criar bug no Azure DevOps')
+    } finally {
+      setSubmitting(false)
+    }
   }
 
   return (
@@ -163,6 +148,9 @@ export function BugCreation() {
           locked={currentStep < 3}
           bugData={bugData}
           stepIdentification={workItem ? resolveStepIdentification(workItem.state) : ''}
+          submitting={submitting}
+          submitError={submitError}
+          regenerateError={regenerateError}
           onCancel={() => setCurrentStep(2)}
           onRegenerate={handleRegenerate}
           onConfirm={handleStep3Confirm}
