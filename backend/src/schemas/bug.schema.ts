@@ -39,12 +39,16 @@ export const createBugSchema = z.object({
     stepIdentification: z.enum(['Quality Analysis', 'Development', 'Review', 'Deployment', 'In Production'], {
         required_error: 'Step de identificação é obrigatório',
     }),
+})
 
-    aiAccelerated: z.literal('Yes'),
-    aiTypeOfAssistance: z.literal('Tests'),
-    aiStageUsed: z.enum(['1. Development', '2. Code Review', '3. Tests']),
-    aiTool: z.literal('Other'),
-    aiToolOther: z.literal('Other'),
+// ─── Schema de validação do retorno da IA ─────────────────────────────────────
+
+export const generatedBugSchema = z.object({
+    titulo: z.string().min(1).max(120),
+    descricao: z.string().min(1),
+    passosReproducao: z.array(z.string()).min(3).max(7),
+    resultadoEsperado: z.array(z.string()).max(3),
+    severidade: z.enum(['1- Critical', '2- High', '3- Medium', '4- Low']),
 })
 
 // ─── Tipos inferidos ──────────────────────────────────────────────────────────
@@ -52,3 +56,4 @@ export const createBugSchema = z.object({
 export type SearchItemInput = z.infer<typeof searchItemSchema>
 export type GenerateBugInput = z.infer<typeof generateBugSchema>
 export type CreateBugInput = z.infer<typeof createBugSchema>
+export type GeneratedBug = z.infer<typeof generatedBugSchema>

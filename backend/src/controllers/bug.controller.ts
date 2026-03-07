@@ -1,5 +1,5 @@
 import type { FastifyReply } from 'fastify'
-import { getWorkItem, createBug, queryAIBugsCount } from '../services/azure.service'
+import { getWorkItem, createBug, queryAIBugsCount, invalidateStatsCache } from '../services/azure.service'
 import { generateBugWithAI, formatGeneratedBug } from '../services/ai.service'
 import { buildSystemPrompt, buildUserPrompt } from '../prompts/bug.prompt'
 import { identifyProductByAreaPath, buildProductContext } from '../products'
@@ -37,8 +37,7 @@ export async function generateBug(input: GenerateBugInput, reply: FastifyReply) 
 
     const productContext = buildProductContext(product)
 
-    console.log(`🧭 Produto identificado: ${product.nome}`)
-    console.log(`📍 Area Path: ${workItem.areaPath}`)
+    reply.log.info({ product: product.nome, areaPath: workItem.areaPath }, 'Produto identificado')
 
     const systemPrompt = buildSystemPrompt()
     const userPrompt = buildUserPrompt({
@@ -51,7 +50,7 @@ export async function generateBug(input: GenerateBugInput, reply: FastifyReply) 
         productContext,
     })
 
-    const generated = await generateBugWithAI(systemPrompt, userPrompt)
+    const generated = await generateBugWithAI(systemPrompt, userPrompt, reply.log)
     const formatted = formatGeneratedBug(generated)
 
     return reply.send({ success: true, product: product.nome, data: formatted })
@@ -66,7 +65,7 @@ export async function createBugHandler(input: CreateBugInput, reply: FastifyRepl
 
     const parentItem = {
         id: workItemSummary.id,
-        url: `https://dev.azure.com/${process.env.AZURE_ORGANIZATION}/${process.env.AZURE_PROJECT}/_apis/wit/workitems/${workItemSummary.id}`,
+        url: workItemSummary.url,
         fields: {
             'System.Title': workItemSummary.title,
             'System.WorkItemType': workItemSummary.type,
@@ -88,22 +87,17 @@ export async function createBugHandler(input: CreateBugInput, reply: FastifyRepl
             aiStageUsed: resolveAiStageUsed(workItemSummary.state),
             aiTool: 'Other',
             aiToolOther: 'Other',
-            parentItem,
         },
         parentItem
     )
 
+    invalidateStatsCache()
     return reply.status(201).send({ success: true, data: created })
 }
 
 // ─── GET /api/bugs/stats ──────────────────────────────────────────────────────
 
 export async function getBugStatsHandler(reply: FastifyReply) {
-    try {
-        const total = await queryAIBugsCount()
-        return reply.send({ success: true, data: { total } })
-    } catch (error) {
-        const message = error instanceof Error ? error.message : 'Erro desconhecido'
-        return reply.status(500).send({ success: false, error: message })
-    }
+    const total = await queryAIBugsCount()
+    return reply.send({ success: true, data: { total } })
 }

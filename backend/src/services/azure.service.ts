@@ -38,7 +38,6 @@ export interface CreateBugParams {
     aiStageUsed: string
     aiTool: string
     aiToolOther: string
-    parentItem: WorkItem
 }
 
 // ─── Cliente HTTP configurado ─────────────────────────────────────────────────
@@ -92,10 +91,22 @@ export async function getWorkItem(id: number): Promise<WorkItemSummary> {
     }
 }
 
+// ─── Sanitização HTML ─────────────────────────────────────────────────────────
+
+function escapeHtml(text: string): string {
+    return text
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#39;')
+}
+
 // ─── Criar bug vinculado ao item pai ─────────────────────────────────────────
 
 export async function createBug(params: CreateBugParams, parentItem: WorkItem): Promise<{ id: number; url: string }> {
-    const descriptionHtml = params.description.replace(/\n/g, '<br>')
+    // Escapa HTML especial antes de converter quebras de linha em <br>
+    const descriptionHtml = escapeHtml(params.description).replace(/\n/g, '<br>')
 
     const payload = [
         { op: 'add', path: '/fields/System.Title', value: params.title },
@@ -144,7 +155,18 @@ export async function createBug(params: CreateBugParams, parentItem: WorkItem): 
 
 // ─── Contar bugs criados por IA nos últimos 90 dias via WIQL ─────────────────
 
+const STATS_TTL_MS = 5 * 60 * 1000
+let statsCache: { total: number; expiresAt: number } | null = null
+
+export function invalidateStatsCache() {
+    statsCache = null
+}
+
 export async function queryAIBugsCount(): Promise<number> {
+    if (statsCache && Date.now() < statsCache.expiresAt) {
+        return statsCache.total
+    }
+
     const wiqlPayload = {
         query: `
             SELECT [System.Id]
@@ -163,7 +185,9 @@ export async function queryAIBugsCount(): Promise<number> {
             workItems: { id: number }[]
         }>('/wit/wiql?api-version=7.0', wiqlPayload)
 
-        return data.workItems?.length ?? 0
+        const total = data.workItems?.length ?? 0
+        statsCache = { total, expiresAt: Date.now() + STATS_TTL_MS }
+        return total
     } catch (error) {
         if (axios.isAxiosError(error)) {
             throw new Error(`Erro ao buscar estatísticas: ${error.response?.data?.message ?? error.message}`)
