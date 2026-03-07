@@ -150,7 +150,7 @@ export function BugStep3({ active, locked, bugData, stepIdentification, submitti
                             width: 8,
                             height: 8,
                             borderRadius: '50%',
-                            background: isSelected ? '#9CA3AF' : s.color,
+                            background: s.color,
                             display: 'inline-block',
                             flexShrink: 0,
                             opacity: isSelected ? 1 : 0.4,
