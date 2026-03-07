@@ -2,6 +2,7 @@ import Fastify, { type FastifyError } from 'fastify'
 import cors from '@fastify/cors'
 import { env } from './config/env'
 import { bugRoutes } from './routes/bug.routes'
+import { productRoutes } from './routes/product.routes'
 
 async function start() {
   const app = Fastify({
@@ -14,7 +15,7 @@ async function start() {
   // ─── CORS ───────────────────────────────────────────────────────────────────
   await app.register(cors, {
     origin: env.FRONTEND_URL,
-    methods: ['GET', 'POST', 'OPTIONS'],
+    methods: ['GET', 'POST', 'PUT', 'OPTIONS'],
   })
 
   // ─── Error handler ──────────────────────────────────────────────────────────
@@ -27,6 +28,7 @@ async function start() {
 
   // ─── Rotas ──────────────────────────────────────────────────────────────────
   await app.register(bugRoutes, { prefix: '/api/bugs' })
+  await app.register(productRoutes, { prefix: '/api/products' })
 
   app.get('/health', async () => ({
     status: 'ok',

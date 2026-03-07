@@ -87,7 +87,7 @@
   display: flex;
   flex-direction: column;
   gap: 8px;
-  margin-bottom: 4px;
+  margin-bottom: 16px;
 }
 
 .label {
@@ -514,4 +514,398 @@
   color: var(--text-muted);
   font-size: 13px;
   flex-shrink: 0;
+}
+
+/* ─── Product form (cadastro) — estilo generatedBlock ────────────────────── */
+.productFormBox {
+  margin-top: 16px;
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-md);
+  background: var(--bg-elevated);
+  overflow: hidden;
+  animation: fadeUp 0.25s ease both;
+}
+
+.productFormHeader {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  padding: 16px 20px;
+  border-bottom: 1px solid var(--border-subtle);
+  color: var(--status-warning, #f59e0b);
+}
+
+.productFormHeaderText {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.productFormTitle {
+  font-size: 13px;
+  font-weight: 700;
+  font-family: 'IBM Plex Sans', sans-serif;
+  color: var(--text-primary);
+}
+
+.productFormSubtitle {
+  font-size: 12px;
+  color: var(--text-secondary);
+  line-height: 1.6;
+  font-family: 'IBM Plex Sans', sans-serif;
+}
+
+.productFormSection {
+  padding: 16px 20px;
+  border-bottom: 1px solid var(--border-subtle);
+}
+
+.productFormSection:last-child {
+  border-bottom: none;
+}
+
+.productFormActions {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 16px 20px;
+  gap: 10px;
+}
+
+.inputFull {
+  width: 100%;
+  box-sizing: border-box;
+  height: 36px;
+  padding: 0 14px;
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--border-default);
+  background: var(--bg-base);
+  color: var(--text-primary);
+  font-size: 14px;
+  font-family: 'IBM Plex Sans', sans-serif;
+  outline: none;
+  transition: border-color var(--transition-fast);
+}
+
+.inputFull:focus {
+  border-color: var(--accent);
+}
+
+.inputFull::placeholder {
+  color: var(--text-muted);
+}
+
+.checkboxGroup {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.checkboxLabel {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  height: 36px;
+  padding: 0 12px;
+  border-radius: 6px;
+  border: 1px solid var(--border-default);
+  background: var(--bg-base);
+  color: var(--text-secondary);
+  font-size: 13px;
+  font-family: 'IBM Plex Sans', sans-serif;
+  cursor: pointer;
+  user-select: none;
+  transition: border-color var(--transition-fast), background var(--transition-fast), color var(--transition-fast);
+}
+
+.checkboxLabel input[type="checkbox"] {
+  display: none;
+}
+
+.checkboxLabel:hover {
+  border-color: var(--accent);
+  color: var(--text-primary);
+}
+
+.checkboxLabelActive {
+  border-color: var(--accent);
+  background: var(--accent-dim);
+  color: var(--accent-text);
+  font-weight: 600;
+}
+
+.checkboxBox {
+  width: 14px;
+  height: 14px;
+  border-radius: 3px;
+  border: 1.5px solid var(--border-default);
+  background: var(--bg-base);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  transition: border-color var(--transition-fast), background var(--transition-fast);
+  color: var(--accent);
+}
+
+.checkboxLabelActive .checkboxBox {
+  border-color: var(--accent);
+  background: var(--accent);
+  color: #fff;
+}
+
+/* ─── Expandable section ─────────────────────────────────────────────────── */
+.expandableHeader {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  cursor: pointer;
+  user-select: none;
+}
+
+.expandableHeader:hover .expandableLabel {
+  color: var(--text-primary);
+}
+
+.expandableArrow {
+  color: var(--text-muted);
+  transition: transform var(--transition-fast);
+  flex-shrink: 0;
+}
+
+.expandableArrowOpen {
+  transform: rotate(90deg);
+}
+
+.expandableLabel {
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--accent-text);
+  font-family: 'IBM Plex Sans', sans-serif;
+  transition: color var(--transition-fast);
+}
+
+.expandableRequired {
+  font-size: 11px;
+  color: var(--status-danger, #ef4444);
+  margin-left: 2px;
+}
+
+.expandableContent {
+  margin-top: 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+/* ─── Module rows ─────────────────────────────────────────────────────────── */
+.moduleRow {
+  display: grid;
+  grid-template-columns: 1fr 2fr 120px auto;
+  gap: 8px;
+  align-items: center;
+}
+
+.moduleInput {
+  height: 36px;
+  padding: 0 12px;
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--border-default);
+  background: var(--bg-base);
+  color: var(--text-primary);
+  font-size: 13px;
+  font-family: 'IBM Plex Sans', sans-serif;
+  outline: none;
+  transition: border-color var(--transition-fast);
+}
+
+.moduleInput:focus {
+  border-color: var(--accent);
+}
+
+.moduleInput::placeholder {
+  color: var(--text-muted);
+}
+
+.moduleSelect {
+  height: 36px;
+  padding: 0 10px;
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--border-default);
+  background: var(--bg-base);
+  color: var(--text-primary);
+  font-size: 13px;
+  font-family: 'IBM Plex Sans', sans-serif;
+  outline: none;
+  cursor: pointer;
+  transition: border-color var(--transition-fast);
+}
+
+.moduleSelect:focus {
+  border-color: var(--accent);
+}
+
+.moduleSelect option[value=""] {
+  color: var(--text-muted);
+}
+
+.removeBtn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  border-radius: var(--radius-sm);
+  background: transparent;
+  border: 1px solid var(--border-default);
+  color: var(--text-muted);
+  cursor: pointer;
+  flex-shrink: 0;
+  transition: all var(--transition-fast);
+}
+
+.removeBtn:hover {
+  border-color: var(--status-danger, #ef4444);
+  color: var(--status-danger, #ef4444);
+}
+
+/* ─── Fluxo blocks ────────────────────────────────────────────────────────── */
+.fluxoBlock {
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-sm);
+  overflow: hidden;
+}
+
+.fluxoHeader {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 8px;
+  align-items: center;
+  padding: 8px 12px;
+  background: var(--bg-base);
+  border-bottom: 1px solid var(--border-subtle);
+}
+
+.fluxoBody {
+  padding: 8px 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.fluxoSubRow {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 8px;
+  align-items: center;
+}
+
+/* ─── Add item button ─────────────────────────────────────────────────────── */
+.addItemBtn {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  height: 30px;
+  padding: 0 12px;
+  border-radius: var(--radius-sm);
+  background: transparent;
+  color: var(--accent-text);
+  font-size: 12px;
+  font-weight: 600;
+  font-family: 'IBM Plex Sans', sans-serif;
+  border: 1px dashed var(--accent-border);
+  cursor: pointer;
+  width: 100%;
+  justify-content: center;
+  transition: all var(--transition-fast);
+  margin-top: 4px;
+}
+
+.addItemBtn:hover {
+  background: var(--accent-dim);
+  border-style: solid;
+}
+
+/* ─── Product success box (identificado) ─────────────────────────────────── */
+.productSuccessBox {
+  border: 1px solid #4ade80;
+  border-radius: var(--radius-md);
+  overflow: hidden;
+  background: var(--bg-elevated);
+  animation: fadeUp 0.25s ease both;
+}
+
+.productSuccessHeader {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 16px;
+  border-bottom: 1px solid var(--border-subtle);
+}
+
+.productSuccessIcon {
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  background: #4ade80;
+  color: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.productSuccessTitle {
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--text-primary);
+  font-family: 'IBM Plex Sans', sans-serif;
+}
+
+.productSuccessBody {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 10px 16px;
+}
+
+.productSuccessSummary {
+  font-size: 13px;
+  color: var(--text-secondary);
+  font-family: 'IBM Plex Sans', sans-serif;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+
+.productSuccessDot {
+  color: var(--text-muted);
+}
+
+.productEditBtn {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  height: 30px;
+  padding: 0 12px;
+  border-radius: var(--radius-sm);
+  background: transparent;
+  color: var(--text-muted);
+  font-size: 12px;
+  font-weight: 600;
+  font-family: 'IBM Plex Sans', sans-serif;
+  border: 1px solid var(--border-default);
+  cursor: pointer;
+  white-space: nowrap;
+  flex-shrink: 0;
+  transition: all var(--transition-fast);
+}
+
+.productEditBtn:hover {
+  border-color: var(--accent);
+  color: var(--accent);
 }

@@ -13,11 +13,26 @@ function resolveAiStageUsed(state: string): '1. Development' | '2. Code Review' 
     return '3. Tests'
 }
 
+function resolveTestEnvironment(state: string): string {
+    if (['Development', 'Review'].includes(state)) return 'Dev'
+    if (['Quality Analysis'].includes(state)) return 'Stg'
+    if (['Validation', 'In Production'].includes(state)) return 'Prd'
+    return 'Dev'
+}
+
 // ─── GET /api/bugs/search/:id ─────────────────────────────────────────────────
 
 export async function searchItem(id: number, reply: FastifyReply) {
     const item = await getWorkItem(id)
-    return reply.send({ success: true, data: item })
+    const product = identifyProductByAreaPath(item.areaPath)
+    return reply.send({
+        success: true,
+        data: {
+            ...item,
+            hasProductContext: product !== null,
+            product: product ?? null,
+        },
+    })
 }
 
 // ─── POST /api/bugs/generate ──────────────────────────────────────────────────
@@ -45,10 +60,34 @@ export async function generateBug(input: GenerateBugInput, reply: FastifyReply) 
         workItemType: workItem.type,
         workItemTitle: workItem.title,
         workItemState: workItem.state,
+        workItemDescription: workItem.description,
+        workItemObjective: workItem.objective,
+        workItemBusinessAC: workItem.businessAcceptanceCriteria,
+        workItemTechnicalAC: workItem.technicalAcceptanceCriteria,
+        workItemAC: workItem.acceptanceCriteria,
+        workItemDoD: workItem.definitionOfDone,
+        testEnvironment: resolveTestEnvironment(workItem.state),
         description,
         product,
         productContext,
     })
+
+    // [DEBUG] Inspecionar contexto do work item e prompt antes de chamar a IA
+    reply.log.info({
+        workItemContext: {
+            id: workItem.id,
+            type: workItem.type,
+            title: workItem.title,
+            description: workItem.description,
+            objective: workItem.objective,
+            businessAcceptanceCriteria: workItem.businessAcceptanceCriteria,
+            technicalAcceptanceCriteria: workItem.technicalAcceptanceCriteria,
+            acceptanceCriteria: workItem.acceptanceCriteria,
+            definitionOfDone: workItem.definitionOfDone,
+        },
+    }, '[DEBUG] Campos do work item recebidos')
+
+    reply.log.info({ userPrompt }, '[DEBUG] Prompt enviado para a IA')
 
     const generated = await generateBugWithAI(systemPrompt, userPrompt, reply.log)
     const formatted = formatGeneratedBug(generated)
