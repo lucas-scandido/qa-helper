@@ -5,6 +5,16 @@ export interface WorkItemResult {
   state: string
   assignedTo: string
   areaPath: string
+  environment: string
+  // Campos ricos (opcionais)
+  objective?: string
+  description?: string
+  detailsBenefit?: string
+  businessAcceptanceCriteria?: string
+  acceptanceCriteria?: string
+  technicalAcceptanceCriteria?: string
+  definitionOfDone?: string
+  otherIncidentCategory?: string
 }
 
 export type BugData = {
@@ -14,4 +24,14 @@ export type BugData = {
   generatedDescription: string
   generatedExpected: string
   generatedSeverity: string
+}
+
+export interface ProductContext {
+  nome: string
+  tipo: string
+  plataformas: string[]
+  usuarios: string[]
+  modulos: Record<string, string>
+  fluxos: Record<string, string[]>
+  areaPaths: string[]
 }

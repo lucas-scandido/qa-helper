@@ -14,3 +14,4 @@ backend/dist/
 # Misc
 .DS_Store
 *.local
+*txt

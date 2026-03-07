@@ -6,6 +6,18 @@ import cora from './cora.json'
 export interface Product {
     nome: string
     tipo: string
+    plataformas: string[]
+    usuarios: string[]
+    fluxos: Record<string, string[]>
+    modulos: Record<string, string>
+    areaPaths: string[]
+}
+
+// ─── Adaptador para JSONs legados (ambiente → plataformas) ───────────────────
+
+interface LegacyProduct {
+    nome: string
+    tipo: string
     ambiente: string[]
     usuarios: string[]
     fluxos: Record<string, string[]>
@@ -13,11 +25,36 @@ export interface Product {
     areaPaths: string[]
 }
 
-// ─── Registro de produtos ─────────────────────────────────────────────────────
+function adaptLegacyProduct(legacy: LegacyProduct): Product {
+    return {
+        nome: legacy.nome,
+        tipo: legacy.tipo,
+        plataformas: legacy.ambiente,
+        usuarios: legacy.usuarios,
+        fluxos: legacy.fluxos,
+        modulos: legacy.modulos,
+        areaPaths: legacy.areaPaths,
+    }
+}
+
+// ─── Registro de produtos (seed + dinâmicos) ─────────────────────────────────
 
 const products: Record<string, Product> = {
-    asmob: asmob as Product,
-    cora: cora as Product,
+    asmob: adaptLegacyProduct(asmob as LegacyProduct),
+    cora: adaptLegacyProduct(cora as LegacyProduct),
+}
+
+// ─── Registrar produto em runtime ────────────────────────────────────────────
+
+export function registerProduct(product: Product): void {
+    const key = product.nome.toLowerCase().replace(/\s+/g, '-')
+    products[key] = product
+}
+
+// ─── Listar todos os produtos registrados ────────────────────────────────────
+
+export function getAllProducts(): Product[] {
+    return Object.values(products)
 }
 
 // ─── Identifica produto pelo Area Path ───────────────────────────────────────
@@ -48,7 +85,7 @@ export function buildProductContext(product: Product): string {
     return `
 Produto: ${product.nome}
 Tipo: ${product.tipo}
-Ambiente: ${product.ambiente.join(', ')}
+Plataformas: ${product.plataformas.join(', ')}
 Usuários: ${product.usuarios.join(', ')}
 
 Fluxos:

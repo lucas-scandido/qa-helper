@@ -15,7 +15,7 @@ export const generateBugSchema = z.object({
     description: z
         .string({ required_error: 'Descrição é obrigatória' })
         .min(20, 'Descrição deve ter no mínimo 20 caracteres')
-        .max(500, 'Descrição deve ter no máximo 500 caracteres'),
+        .max(200, 'Descrição deve ter no máximo 200 caracteres'),
 
     workItemId: z
         .number({ required_error: 'workItemId é obrigatório' })
@@ -51,9 +51,25 @@ export const generatedBugSchema = z.object({
     severidade: z.enum(['1- Critical', '2- High', '3- Medium', '4- Low']),
 })
 
+// ─── Schema de cadastro de produto ────────────────────────────────────────────
+
+export const productSchema = z.object({
+    nome: z.string({ required_error: 'Nome do produto é obrigatório' }).min(1, 'Nome é obrigatório'),
+    tipo: z.string().default('Aplicação'),
+    plataformas: z.array(z.string()).min(1, 'Selecione ao menos uma plataforma'),
+    usuarios: z.array(z.string()).min(1, 'Informe ao menos um tipo de usuário'),
+    modulos: z.record(z.string(), z.string()).refine(
+        (val) => Object.keys(val).length > 0,
+        { message: 'Cadastre ao menos um módulo' }
+    ),
+    fluxos: z.record(z.string(), z.array(z.string())).default({}),
+    areaPaths: z.array(z.string()).min(1, 'Informe ao menos um Area Path'),
+})
+
 // ─── Tipos inferidos ──────────────────────────────────────────────────────────
 
 export type SearchItemInput = z.infer<typeof searchItemSchema>
 export type GenerateBugInput = z.infer<typeof generateBugSchema>
 export type CreateBugInput = z.infer<typeof createBugSchema>
 export type GeneratedBug = z.infer<typeof generatedBugSchema>
+export type ProductInput = z.infer<typeof productSchema>

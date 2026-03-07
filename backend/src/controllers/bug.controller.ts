@@ -37,7 +37,7 @@ export async function generateBug(input: GenerateBugInput, reply: FastifyReply) 
 
     const productContext = buildProductContext(product)
 
-    reply.log.info({ product: product.nome, areaPath: workItem.areaPath }, 'Produto identificado')
+    reply.log.info({ product: product.nome, areaPath: workItem.areaPath, environment: workItem.environment }, 'Produto identificado')
 
     const systemPrompt = buildSystemPrompt()
     const userPrompt = buildUserPrompt({
@@ -45,9 +45,19 @@ export async function generateBug(input: GenerateBugInput, reply: FastifyReply) 
         workItemType: workItem.type,
         workItemTitle: workItem.title,
         workItemState: workItem.state,
+        environment: workItem.environment,
         description,
         product,
         productContext,
+        // Campos ricos do work item
+        objective: workItem.objective,
+        workItemDescription: workItem.description,
+        detailsBenefit: workItem.detailsBenefit,
+        businessAcceptanceCriteria: workItem.businessAcceptanceCriteria,
+        acceptanceCriteria: workItem.acceptanceCriteria,
+        technicalAcceptanceCriteria: workItem.technicalAcceptanceCriteria,
+        definitionOfDone: workItem.definitionOfDone,
+        otherIncidentCategory: workItem.otherIncidentCategory,
     })
 
     const generated = await generateBugWithAI(systemPrompt, userPrompt, reply.log)

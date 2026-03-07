@@ -1,7 +1,9 @@
 import type { FastifyInstance, FastifyRequest, FastifyReply } from 'fastify'
 import { searchItem, generateBug, createBugHandler, getBugStatsHandler } from '../controllers/bug.controller'
-import { generateBugSchema, createBugSchema } from '../schemas/bug.schema'
+import { generateBugSchema, createBugSchema, productSchema } from '../schemas/bug.schema'
 import type { GenerateBugInput, CreateBugInput } from '../schemas/bug.schema'
+import { identifyProductByAreaPath, registerProduct } from '../products'
+import type { Product } from '../products'
 
 export async function bugRoutes(app: FastifyInstance) {
 
@@ -59,5 +61,41 @@ export async function bugRoutes(app: FastifyInstance) {
         }
 
         return createBugHandler(parsed.data, reply)
+    })
+
+    // ─── Rotas de Produto ─────────────────────────────────────────────────────
+
+    // GET /api/bugs/products/check/:areaPath — verifica se existe produto para o Area Path
+    app.get<{ Params: { areaPath: string } }>('/products/check/:areaPath', async (
+        req: FastifyRequest<{ Params: { areaPath: string } }>,
+        reply: FastifyReply
+    ) => {
+        const areaPath = decodeURIComponent(req.params.areaPath)
+        const product = identifyProductByAreaPath(areaPath)
+
+        if (product) {
+            return reply.send({ success: true, exists: true, data: product })
+        }
+
+        return reply.send({ success: true, exists: false })
+    })
+
+    // POST /api/bugs/products — cadastra novo produto
+    app.post<{ Body: Product }>('/products', async (
+        req: FastifyRequest<{ Body: Product }>,
+        reply: FastifyReply
+    ) => {
+        const parsed = productSchema.safeParse(req.body)
+
+        if (!parsed.success) {
+            return reply.status(400).send({
+                success: false,
+                error: parsed.error.errors.map(e => e.message).join(', '),
+            })
+        }
+
+        registerProduct(parsed.data as Product)
+
+        return reply.status(201).send({ success: true, data: parsed.data })
     })
 }

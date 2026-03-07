@@ -13,6 +13,14 @@ export interface WorkItem {
         'System.AssignedTo'?: { displayName: string; uniqueName: string } | string
         'System.AreaPath': string
         'System.IterationPath': string
+        'System.Description'?: string
+        'Custom.Standard_Objective'?: string
+        'Custom.Standard_Details_Benefit'?: string
+        'Custom.Standard_Business_Acceptance_Criteria'?: string
+        'Microsoft.VSTS.Common.AcceptanceCriteria'?: string
+        'Custom.Standard_Technical_Acceptance_Criteria'?: string
+        'Custom.Standard_Definition_of_Done'?: string
+        'Custom.Standard_Other_Incident_Category'?: string
     }
 }
 
@@ -25,6 +33,16 @@ export interface WorkItemSummary {
     areaPath: string
     iterationPath: string
     url: string
+    environment: string
+    // Campos ricos (opcionais — dependem do tipo de work item)
+    objective?: string
+    description?: string
+    detailsBenefit?: string
+    businessAcceptanceCriteria?: string
+    acceptanceCriteria?: string
+    technicalAcceptanceCriteria?: string
+    definitionOfDone?: string
+    otherIncidentCategory?: string
 }
 
 export interface CreateBugParams {
@@ -38,6 +56,39 @@ export interface CreateBugParams {
     aiStageUsed: string
     aiTool: string
     aiToolOther: string
+}
+
+// ─── Utilitários ──────────────────────────────────────────────────────────────
+
+/** Remove tags HTML e decodifica entidades básicas */
+function stripHtml(html: string | undefined | null): string | undefined {
+    if (!html) return undefined
+
+    const text = html
+        .replace(/<br\s*\/?>/gi, '\n')
+        .replace(/<\/?(div|p|li|ul|ol|h[1-6])[^>]*>/gi, '\n')
+        .replace(/<[^>]+>/g, '')
+        .replace(/&amp;/g, '&')
+        .replace(/&lt;/g, '<')
+        .replace(/&gt;/g, '>')
+        .replace(/&quot;/g, '"')
+        .replace(/&#39;/g, "'")
+        .replace(/&nbsp;/g, ' ')
+        .replace(/\n{3,}/g, '\n\n')
+        .trim()
+
+    return text.length > 0 ? text : undefined
+}
+
+/** Deduz o ambiente com base no state do card */
+function resolveEnvironment(state: string): string {
+    const s = state.toLowerCase()
+
+    if (['Development', 'Code Review', 'Review', 'Tests'].includes(s)) return 'Dev'
+    if (['Quality analysis'].includes(s)) return 'Stg'
+    if (['Validation'].includes(s)) return 'Prd'
+
+    return 'Stg' // fallback seguro
 }
 
 // ─── Cliente HTTP configurado ─────────────────────────────────────────────────
@@ -56,7 +107,7 @@ const azureClient = axios.create({
 export async function getWorkItem(id: number): Promise<WorkItemSummary> {
     try {
         const { data } = await azureClient.get<WorkItem>(
-            `/wit/workitems/${id}?api-version=7.0`
+            `/wit/workitems/${id}?$expand=All&api-version=7.0`
         )
 
         const assignedTo = data.fields['System.AssignedTo']
@@ -67,15 +118,27 @@ export async function getWorkItem(id: number): Promise<WorkItemSummary> {
                     ? assignedTo
                     : 'Não atribuído'
 
+        const state = data.fields['System.State']
+
         return {
             id: data.id,
             title: data.fields['System.Title'],
             type: data.fields['System.WorkItemType'],
-            state: data.fields['System.State'],
+            state,
             assignedTo: assignedToName,
             areaPath: data.fields['System.AreaPath'],
             iterationPath: data.fields['System.IterationPath'],
             url: data.url,
+            environment: resolveEnvironment(state),
+            // Campos ricos — stripHtml limpa e retorna undefined se vazio
+            objective: stripHtml(data.fields['Custom.Standard_Objective']),
+            description: stripHtml(data.fields['System.Description']),
+            detailsBenefit: stripHtml(data.fields['Custom.Standard_Details_Benefit']),
+            businessAcceptanceCriteria: stripHtml(data.fields['Custom.Standard_Business_Acceptance_Criteria']),
+            acceptanceCriteria: stripHtml(data.fields['Microsoft.VSTS.Common.AcceptanceCriteria']),
+            technicalAcceptanceCriteria: stripHtml(data.fields['Custom.Standard_Technical_Acceptance_Criteria']),
+            definitionOfDone: stripHtml(data.fields['Custom.Standard_Definition_of_Done']),
+            otherIncidentCategory: stripHtml(data.fields['Custom.Standard_Other_Incident_Category']),
         }
     } catch (error) {
         if (axios.isAxiosError(error)) {
@@ -91,7 +154,7 @@ export async function getWorkItem(id: number): Promise<WorkItemSummary> {
     }
 }
 
-// ─── Sanitização HTML ─────────────────────────────────────────────────────────
+// ─── Sanitização HTML para criação de bug ─────────────────────────────────────
 
 function escapeHtml(text: string): string {
     return text
@@ -105,7 +168,6 @@ function escapeHtml(text: string): string {
 // ─── Criar bug vinculado ao item pai ─────────────────────────────────────────
 
 export async function createBug(params: CreateBugParams, parentItem: WorkItem): Promise<{ id: number; url: string }> {
-    // Escapa HTML especial antes de converter quebras de linha em <br>
     const descriptionHtml = escapeHtml(params.description).replace(/\n/g, '<br>')
 
     const payload = [

@@ -1,0 +1,282 @@
+/* ─── Product Context Warning ─────────────────────────────────────────────── */
+.productWarning {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    padding: 14px 18px;
+    border-radius: var(--radius-md);
+    background: rgba(245, 158, 11, 0.07);
+    border: 1px solid rgba(245, 158, 11, 0.20);
+    margin-top: 20px;
+    animation: fadeUp 0.3s ease both;
+}
+
+.productWarningIcon {
+    color: var(--status-warning);
+    flex-shrink: 0;
+    margin-top: 2px;
+}
+
+.productWarningContent {
+    flex: 1;
+    min-width: 0;
+}
+
+.productWarningTitle {
+    font-size: 13px;
+    font-weight: 700;
+    color: var(--status-warning);
+    font-family: 'IBM Plex Sans', sans-serif;
+    margin-bottom: 4px;
+}
+
+.productWarningText {
+    font-size: 12px;
+    color: var(--text-secondary);
+    line-height: 1.6;
+    font-family: 'IBM Plex Sans', sans-serif;
+}
+
+.productWarningText strong {
+    color: var(--text-primary);
+}
+
+/* ─── Product Form ────────────────────────────────────────────────────────── */
+.productForm {
+    margin-top: 20px;
+    padding-top: 16px;
+    border-top: 1px solid var(--border-subtle);
+}
+
+.productFormGrid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+}
+
+.productFormActions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 10px;
+    margin-top: 20px;
+    padding-top: 16px;
+    border-top: 1px solid var(--border-subtle);
+}
+
+/* Checkboxes */
+.checkboxRow {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+}
+
+.checkboxLabel {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 14px;
+    border-radius: var(--radius-sm);
+    cursor: pointer;
+    border: 1px solid var(--border-default);
+    background: transparent;
+    font-size: 13px;
+    color: var(--text-secondary);
+    font-family: 'IBM Plex Sans', sans-serif;
+    font-weight: 500;
+    transition: all 0.15s ease;
+    user-select: none;
+}
+
+.checkboxLabelActive {
+    border-color: var(--accent);
+    background: var(--accent-dim);
+    color: var(--accent-text);
+}
+
+.checkboxBox {
+    width: 16px;
+    height: 16px;
+    border-radius: 4px;
+    border: 2px solid var(--border-strong);
+    background: transparent;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.15s ease;
+    color: #fff;
+}
+
+.checkboxBoxActive {
+    background: var(--accent);
+    border-color: var(--accent);
+}
+
+/* Section headers (Módulos, Fluxos) */
+.productSectionHeader {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 0;
+    cursor: pointer;
+    user-select: none;
+    font-size: 12px;
+    font-weight: 700;
+    color: var(--text-secondary);
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    font-family: 'IBM Plex Sans', sans-serif;
+}
+
+.productSectionHint {
+    font-size: 11px;
+    font-weight: 400;
+    color: var(--text-muted);
+    text-transform: none;
+    letter-spacing: 0;
+}
+
+/* Dynamic rows */
+.productDynamicSection {
+    padding-left: 4px;
+    animation: fadeUp 0.2s ease both;
+}
+
+.productDynamicRow {
+    display: flex;
+    gap: 8px;
+    align-items: center;
+    margin-bottom: 8px;
+}
+
+.productRemoveBtn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 32px;
+    height: 40px;
+    border-radius: var(--radius-sm);
+    border: 1px solid var(--border-subtle);
+    background: transparent;
+    color: var(--text-muted);
+    cursor: pointer;
+    flex-shrink: 0;
+    transition: all 0.15s ease;
+}
+
+.productRemoveBtn:hover {
+    border-color: var(--status-danger);
+    color: var(--status-danger);
+}
+
+.productAddBtn {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 6px 12px;
+    border-radius: var(--radius-sm);
+    border: 1px dashed var(--border-default);
+    background: transparent;
+    color: var(--text-muted);
+    font-size: 12px;
+    font-weight: 600;
+    cursor: pointer;
+    font-family: 'IBM Plex Sans', sans-serif;
+    transition: all 0.15s ease;
+}
+
+.productAddBtn:hover {
+    border-color: var(--accent);
+    color: var(--accent-text);
+}
+
+/* Fluxo card */
+.productFluxoCard {
+    border: 1px solid var(--border-subtle);
+    border-radius: var(--radius-md);
+    padding: 16px;
+    margin-bottom: 12px;
+    background: var(--bg-overlay);
+}
+
+/* ─── Product Identified Badge ────────────────────────────────────────────── */
+.productBadge {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    padding: 12px 18px;
+    border-radius: var(--radius-md);
+    margin-top: 20px;
+    background: rgba(74, 222, 128, 0.07);
+    border: 1px solid rgba(74, 222, 128, 0.20);
+    animation: fadeUp 0.3s ease both;
+}
+
+.productBadgeLeft {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.productBadgeDot {
+    width: 22px;
+    height: 22px;
+    border-radius: 50%;
+    background: var(--status-success);
+    color: #fff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+}
+
+.productBadgeTitle {
+    font-size: 13px;
+    font-weight: 700;
+    color: var(--text-primary);
+    font-family: 'IBM Plex Sans', sans-serif;
+}
+
+.productBadgeInfo {
+    font-size: 12px;
+    color: var(--text-secondary);
+    font-family: 'IBM Plex Sans', sans-serif;
+    margin-top: 2px;
+}
+
+.productEditBtn {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 6px 12px;
+    border-radius: var(--radius-sm);
+    border: 1px solid var(--border-default);
+    background: transparent;
+    color: var(--text-muted);
+    font-size: 12px;
+    font-weight: 600;
+    cursor: pointer;
+    font-family: 'IBM Plex Sans', sans-serif;
+    transition: all 0.15s ease;
+}
+
+.productEditBtn:hover {
+    border-color: var(--accent);
+    color: var(--accent-text);
+}
+
+/* ─── Product Checking ────────────────────────────────────────────────────── */
+.productChecking {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 14px 18px;
+    margin-top: 20px;
+    border-radius: var(--radius-md);
+    background: var(--bg-elevated);
+    border: 1px solid var(--border-subtle);
+    font-size: 13px;
+    color: var(--text-secondary);
+    font-family: 'IBM Plex Sans', sans-serif;
+    animation: fadeUp 0.2s ease both;
+}

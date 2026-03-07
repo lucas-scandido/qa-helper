@@ -1,10 +1,11 @@
-import { useState } from 'react'
+import { useState, useCallback } from 'react'
 import { api } from '../../lib/api'
 import type { WorkItemResult, BugData } from '../../types'
 import { BugStepIndicator } from './components/BugStepIndicator'
 import { BugStep1 } from './components/BugStep1'
 import { BugStep2 } from './components/BugStep2'
 import { BugStep3 } from './components/BugStep3'
+import { BugSuccessModal } from './components/BugSuccessModal'
 import styles from './BugCreation.module.css'
 
 const initialBugData: BugData = {
@@ -29,6 +30,11 @@ export function BugCreation() {
   const [submitting, setSubmitting] = useState(false)
   const [submitError, setSubmitError] = useState<string | null>(null)
   const [regenerateError, setRegenerateError] = useState<string | null>(null)
+
+  // ─── Success modal state ──────────────────────────────────────────────────
+  const [showSuccess, setShowSuccess] = useState(false)
+  const [createdBugId, setCreatedBugId] = useState<number | null>(null)
+  const [createdBugUrl, setCreatedBugUrl] = useState<string | null>(null)
 
   const handleStep1Submit = (itemId: string, foundItem: WorkItemResult) => {
     setWorkItem(foundItem)
@@ -100,15 +106,46 @@ export function BugCreation() {
       const json = await response.json()
       if (!response.ok || !json.success) throw new Error(json.error ?? 'Erro ao criar bug')
 
-      setCurrentStep(1)
-      setBugData(initialBugData)
-      setWorkItem(null)
+      // Salvar dados do bug criado e exibir modal de sucesso
+      setCreatedBugId(json.data.id)
+      setCreatedBugUrl(json.data.url)
+      setShowSuccess(true)
     } catch (err) {
       setSubmitError(err instanceof Error ? err.message : 'Erro ao criar bug no Azure DevOps')
     } finally {
       setSubmitting(false)
     }
   }
+
+  // ─── Handlers do modal de sucesso ─────────────────────────────────────────
+
+  const handleNewBugSameItem = useCallback(() => {
+    setShowSuccess(false)
+    setCreatedBugId(null)
+    setCreatedBugUrl(null)
+    setBugData(prev => ({
+      ...prev,
+      description: '',
+      generatedTitle: '',
+      generatedDescription: '',
+      generatedExpected: '',
+      generatedSeverity: '',
+    }))
+    setSubmitError(null)
+    setRegenerateError(null)
+    setCurrentStep(2)
+  }, [])
+
+  const handleNewItem = useCallback(() => {
+    setShowSuccess(false)
+    setCreatedBugId(null)
+    setCreatedBugUrl(null)
+    setBugData(initialBugData)
+    setWorkItem(null)
+    setSubmitError(null)
+    setRegenerateError(null)
+    setCurrentStep(1)
+  }, [])
 
   return (
     <div className={styles.page}>
@@ -153,6 +190,17 @@ export function BugCreation() {
           onConfirm={handleStep3Confirm}
         />
       </div>
+
+      {/* Modal de sucesso */}
+      {showSuccess && createdBugId && createdBugUrl && workItem && (
+        <BugSuccessModal
+          bugId={createdBugId}
+          bugUrl={createdBugUrl}
+          parentItemId={workItem.id}
+          onNewBugSameItem={handleNewBugSameItem}
+          onNewItem={handleNewItem}
+        />
+      )}
     </div>
   )
 }
